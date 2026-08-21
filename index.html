@@ -10,13 +10,23 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .app{width:min(440px,100%);margin:auto;min-height:100vh;padding-bottom:92px}.top{padding:25px 18px 12px;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:950;font-size:23px;line-height:.92}.logo span{color:var(--accent)}.bell{font-size:22px}.content{padding:8px 15px}.screen{display:none}.screen.active{display:block}
 .leaguebar,.card,.hero{background:var(--panel);border:1px solid var(--line);border-radius:19px}.leaguebar{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;margin:0 15px 12px}.hero{padding:18px;margin-bottom:12px;background:linear-gradient(135deg,#1b1029,#0f0c16)}.heroGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.big{font-size:42px;font-weight:950;line-height:1;margin:5px 0}.accent{color:var(--accent)}.green{color:var(--green)}.gold{color:var(--gold)}.muted{color:var(--muted);font-size:12px}.kicker{font-size:11px;color:#c18cff;font-weight:850;text-transform:uppercase;letter-spacing:.6px}.btn{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2);color:var(--text);font-weight:800}.primary{background:var(--accent);border-color:var(--accent);color:white}.full{width:100%;margin-top:10px}.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{padding:13px}.stat strong{display:block;font-size:21px;margin-top:3px}.section{font-size:18px;font-weight:900;margin:19px 2px 9px}.card{padding:15px;margin-bottom:10px}.deadline{display:flex;align-items:center;justify-content:space-between}.pill{padding:6px 8px;border-radius:9px;font-size:10px;font-weight:900;background:#1b3a2b;color:var(--green)}.match{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center}.team{font-weight:850}.vs{color:var(--muted);font-size:12px}.options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.options .btn.selected{border-color:var(--accent);background:#28133c;box-shadow:0 0 0 1px var(--accent) inset}.seasonRow{display:flex;align-items:center;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.seasonRow:last-child{border:0}.seasonRow .title{flex:1;font-weight:750}.select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px}.rankRow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.rankRow:last-child{border:0}.rank{width:30px;font-weight:900}.avatar{width:30px;height:30px;border-radius:50%;background:#2d2540;display:grid;place-items:center;margin-right:9px}.name{flex:1;font-weight:750}.points{font-weight:900}.code{font-size:23px;letter-spacing:2px;font-weight:950;text-align:center;padding:8px}.notice{padding:11px;border-radius:12px;background:#181323;border:1px solid var(--line);font-size:12px;color:#c8c0d4;line-height:1.45}.nav{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(440px,100%);background:#0e0b15f2;border-top:1px solid var(--line);backdrop-filter:blur(15px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 11px}.nav button{background:none;border:0;color:var(--muted);font-size:10px;font-weight:750;padding:6px 1px}.nav button.active{color:var(--accent)}.navIcon{display:block;font-size:18px;margin-bottom:2px}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#20162b;border:1px solid #523a69;padding:10px 14px;border-radius:12px;font-size:12px;display:none;z-index:20}
+
+.modal{position:fixed;inset:0;background:#090710ee;display:none;align-items:flex-end;justify-content:center;z-index:30}
+.sheet{width:min(440px,100%);background:#12101b;border:1px solid #30283f;border-radius:22px 22px 0 0;padding:20px}
+.field{width:100%;background:#181522;color:#f7f3ff;border:1px solid #30283f;border-radius:12px;padding:12px;margin-top:6px;font-size:16px}
+label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
+
+.accountGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.teamChoice{border:1px solid #30283f;border-radius:14px;padding:11px;background:#181522;color:#f7f3ff;text-align:left;font-weight:800}
+.teamChoice.selected{outline:2px solid var(--accent);background:#28133c}
+.themeDot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--team)}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top"><div class="logo">PREMIER<br><span>PREDICTOR</span></div><div class="bell">♧</div></header>
 
-<div class="leaguebar"><div>🛡️ <b>Pallett League</b> <span class="accent">⌄</span></div><div class="muted">👥 8 members</div></div>
+<div class="leaguebar" id="leagueBar"><div>🛡️ <b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">👥 8 members</div></div>
 
 <section id="home" class="screen active content">
 <div class="hero"><div class="heroGrid"><div><div class="kicker">Your position</div><div class="big">214</div><div class="muted">🥈 2nd of 8</div><div class="muted">6 points behind Josh</div></div><div><div class="kicker">Virtual prize pot</div><div class="big green">£400</div><div class="muted">1st place takes all</div><button class="btn full" data-go="league">View pot breakdown</button></div></div></div>
@@ -50,16 +60,142 @@
 </section>
 
 <section id="profile" class="screen content">
+<div class="card" id="accountSummary">
+  <div class="kicker">Your account</div>
+  <div class="big" id="accountName">You</div>
+  <div class="muted" id="accountTeam">Favourite team not selected</div>
+  <button class="btn full" id="changeTeam">Change favourite team</button>
+</div>
+
 <div class="section">👤 Profile</div><div class="card"><div class="big">You</div><div class="muted">214 total points</div></div>
 <div class="section">Scoring rules</div><div class="card"><div class="seasonRow"><span class="title">Correct gameweek result</span><b>3 pts</b></div><div class="seasonRow"><span class="title">Season winner</span><b>15 pts</b></div><div class="seasonRow"><span class="title">2nd place</span><b>10 pts</b></div><div class="seasonRow"><span class="title">3rd place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">4th place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Each relegated team</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Top goalscorer</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Top assists</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Player of the Season</span><b>15 pts</b></div></div>
 <div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div>
 </section>
 
+
+
+<div id="accountModal" class="modal">
+  <div class="sheet">
+    <div class="kicker">Account</div>
+    <h2 style="margin:4px 0 8px">Create your profile</h2>
+    <div class="muted">Choose your favourite team. Premier Predictor will use its colours for your personal theme.</div>
+    <label for="displayName">Your name</label>
+    <input id="displayName" class="field" placeholder="e.g. Josh">
+    <label>Favourite team</label>
+    <div id="teamChoices" class="accountGrid"></div>
+    <button class="btn primary full" id="saveAccount">Save profile</button>
+  </div>
+</div>
+<div id="leagueModal" class="modal">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div class="kicker">League management</div><h2 style="margin:4px 0">Your leagues</h2></div>
+      <button class="btn" id="closeLeague">Close</button>
+    </div>
+    <div id="leagueList" class="card" style="margin-top:12px"></div>
+    <button class="btn primary full" id="createLeague">Create a new league</button>
+    <button class="btn full" id="joinLeague">Join with invite code</button>
+    <div id="leagueForm" style="display:none;margin-top:12px">
+      <label for="leagueName">League name</label>
+      <input id="leagueName" class="field" placeholder="e.g. Pallett League">
+      <label for="leagueEntry">Entry amount (virtual for now)</label>
+      <input id="leagueEntry" class="field" type="number" min="0" value="50">
+      <button class="btn primary full" id="saveLeague">Create league</button>
+    </div>
+    <div id="joinForm" style="display:none;margin-top:12px">
+      <label for="inviteCode">Invite code</label>
+      <input id="inviteCode" class="field" placeholder="e.g. PALLETT-26" autocapitalize="characters">
+      <button class="btn primary full" id="saveJoin">Join league</button>
+    </div>
+  </div>
+</div>
 <nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
 <div id="toast" class="toast"></div>
 </div>
 
 <script>
+
+
+const teamPalette=[["Arsenal", "#db0007"], ["Aston Villa", "#670e36"], ["AFC Bournemouth", "#da291c"], ["Brentford", "#e30613"], ["Brighton", "#0057b8"], ["Chelsea", "#034694"], ["Crystal Palace", "#1b458f"], ["Everton", "#003399"], ["Fulham", "#000000"], ["Leeds United", "#ffcd00"], ["Liverpool", "#c8102e"], ["Manchester City", "#6cabdd"], ["Manchester United", "#da2919"], ["Newcastle United", "#241f20"], ["Nottingham Forest", "#e53233"], ["Sunderland", "#eb172b"], ["Tottenham Hotspur", "#132257"], ["West Ham United", "#7a263a"], ["Wolverhampton Wanderers", "#fdb913"], ["Burnley", "#6c1d45"]];
+const accountState=JSON.parse(localStorage.getItem('pp_account')||'null')||{name:'You',team:'Arsenal',colour:'#db0007'};
+function applyTeamTheme(){
+ document.documentElement.style.setProperty('--accent',accountState.colour);
+ const dark=accountState.colour;
+ document.documentElement.style.setProperty('--team',dark);
+ document.getElementById('accountName').textContent=accountState.name;
+ document.getElementById('accountTeam').innerHTML='<span class="themeDot" style="--team:'+accountState.colour+'"></span>'+accountState.team;
+}
+function openAccount(){
+ const wrap=document.getElementById('teamChoices'); wrap.innerHTML='';
+ teamPalette.forEach(([name,colour])=>{
+   const b=document.createElement('button'); b.type='button'; b.className='teamChoice';
+   b.innerHTML='<span class="themeDot" style="--team:'+colour+'"></span>'+name;
+   if(name===accountState.team)b.classList.add('selected');
+   b.addEventListener('click',()=>{
+     wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));
+     b.classList.add('selected'); accountState.team=name; accountState.colour=colour;
+   });
+   wrap.appendChild(b);
+ });
+ document.getElementById('displayName').value=accountState.name==='You'?'':accountState.name;
+ document.getElementById('accountModal').style.display='flex';
+}
+document.getElementById('saveAccount').addEventListener('click',()=>{
+ const name=document.getElementById('displayName').value.trim()||'You';
+ accountState.name=name; localStorage.setItem('pp_account',JSON.stringify(accountState));
+ applyTeamTheme(); document.getElementById('accountModal').style.display='none'; toast('Profile saved · '+accountState.team);
+});
+document.getElementById('changeTeam').addEventListener('click',openAccount);
+applyTeamTheme();
+
+const leagueStore=JSON.parse(localStorage.getItem('pp_leagues')||'null')||[
+ {name:'Pallett League',code:'PALLETT-26',members:8,entry:50,owner:true}
+];
+let activeLeague=leagueStore[0];
+function saveLeagues(){localStorage.setItem('pp_leagues',JSON.stringify(leagueStore))}
+function renderLeagues(){
+ const list=document.getElementById('leagueList'); list.innerHTML='';
+ leagueStore.forEach((l,i)=>{
+  const row=document.createElement('div'); row.className='rankRow';
+  row.innerHTML='<span class="avatar">'+l.name[0].toUpperCase()+'</span><span class="name">'+l.name+'<div class="muted">'+l.members+' members · '+l.code+'</div></span><button class="btn '+(activeLeague===l?'primary':'')+'" data-league="'+i+'">'+(activeLeague===l?'Active':'Select')+'</button>';
+  list.appendChild(row);
+ });
+ list.querySelectorAll('[data-league]').forEach(b=>b.addEventListener('click',()=>{
+  activeLeague=leagueStore[Number(b.dataset.league)];
+  document.getElementById('activeLeagueName').textContent=activeLeague.name;
+  document.getElementById('memberCount').textContent='👥 '+activeLeague.members+' members';
+  renderLeagues(); toast(activeLeague.name+' selected');
+ }));
+}
+document.getElementById('leagueBar').addEventListener('click',()=>{
+ document.getElementById('leagueModal').style.display='flex'; renderLeagues();
+ document.getElementById('leagueForm').style.display='none'; document.getElementById('joinForm').style.display='none';
+});
+document.getElementById('closeLeague').addEventListener('click',()=>document.getElementById('leagueModal').style.display='none');
+document.getElementById('createLeague').addEventListener('click',()=>{
+ document.getElementById('leagueForm').style.display='block'; document.getElementById('joinForm').style.display='none';
+});
+document.getElementById('joinLeague').addEventListener('click',()=>{
+ document.getElementById('joinForm').style.display='block'; document.getElementById('leagueForm').style.display='none';
+});
+document.getElementById('saveLeague').addEventListener('click',()=>{
+ const name=document.getElementById('leagueName').value.trim();
+ const entry=Number(document.getElementById('leagueEntry').value||0);
+ if(!name){toast('Enter a league name');return}
+ const code=(name.replace(/[^a-z0-9]/gi,'').slice(0,6).toUpperCase()||'LEAGUE')+'-'+Math.floor(10+Math.random()*90);
+ const l={name,code,members:1,entry,owner:true}; leagueStore.push(l); activeLeague=l; saveLeagues();
+ document.getElementById('activeLeagueName').textContent=name; document.getElementById('memberCount').textContent='👥 1 member';
+ document.getElementById('leagueForm').style.display='none'; renderLeagues(); toast('League created · '+code);
+});
+document.getElementById('saveJoin').addEventListener('click',()=>{
+ const code=document.getElementById('inviteCode').value.trim().toUpperCase();
+ const l=leagueStore.find(x=>x.code===code);
+ if(!l){toast('Invite code not found in this demo');return}
+ l.members+=1; activeLeague=l; saveLeagues();
+ document.getElementById('activeLeagueName').textContent=l.name; document.getElementById('memberCount').textContent='👥 '+l.members+' members';
+ document.getElementById('joinForm').style.display='none'; renderLeagues(); toast('Joined '+l.name);
+});
+
 const matches=[
 ["Arsenal","Coventry City"],["Hull City","Manchester United"],["Everton","Crystal Palace"],["Ipswich Town","Sunderland"],["Nottingham Forest","Leeds United"],["Brentford","Tottenham Hotspur"],["Brighton & Hove Albion","Aston Villa"],["Manchester City","AFC Bournemouth"],["Newcastle United","Liverpool"],["Fulham","Chelsea"]
 ];
