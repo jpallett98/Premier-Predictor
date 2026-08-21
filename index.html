@@ -816,7 +816,7 @@ document.getElementById('saveJoin').addEventListener('click',async()=>{
   finally{btn.disabled=false}
 });
 
-(async()=>{try{await chooseInitialLeague();await renderActiveLeaguePage()}catch(e){console.warn(e)}})();
+(async()=>{try{await chooseInitialLeague();await renderActiveLeaguePage()}catch(e){console.warn('League backend unavailable:',e)}})();
 
 
 /* FanRank V15 — real prediction data layer */
@@ -1158,4 +1158,4 @@ window.FanRankDB = FanRankDB;
  logout.onclick=async()=>{const {error}=await window.supabaseClient.auth.signOut();if(error){toast(error.message);return}location.reload()};
 })();
 </script>
-</body></html>
+<script>window.addEventListener('error',e=>console.warn('FanRank non-fatal error:',e.error||e.message));window.addEventListener('unhandledrejection',e=>console.warn('FanRank non-fatal promise rejection:',e.reason));</script></body></html>
