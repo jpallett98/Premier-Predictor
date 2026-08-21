@@ -1,11 +1,9 @@
-# Premier Predictor v7
+# Premier Predictor v8
 
-Interface refinements:
-- Home position card simplified to Position / 2nd / 214 points
-- Home Gameweek status uses green for OPEN and red for CLOSED
-- Added Settings
-- Added Light / Dark / System default appearance
-- Favourite team colour remains the accent in either appearance
-- V6 navigation and other interface refinements retained
-
-This remains a front-end prototype with local data.
+Fixes:
+- OPEN is green text only
+- CLOSED is red text only
+- Light mode now overrides the remaining dark hard-coded UI surfaces
+- Cards, hero, navigation, modal, onboarding, fields, selects, buttons and notices adapt to light mode
+- Favourite team remains the accent colour
+- Existing V7 interface retained
