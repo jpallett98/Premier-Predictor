@@ -399,7 +399,7 @@ function fanRankRenderPlayerPicker(inputId, resultsId, selectedId, pickKey) {
       selected.innerHTML='<span><b>'+name+'</b><br><span class="player-club">'+club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
       selected.querySelector('[data-clear]').addEventListener('click',()=>{input.value='';selected.style.display='none';render();input.focus();});
       results.innerHTML='';
-    });
+    }));
   }
   input.addEventListener('input',render);
   input.addEventListener('focus',render);
