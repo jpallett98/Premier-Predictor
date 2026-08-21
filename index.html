@@ -73,9 +73,57 @@ body{transition:background .2s,color .2s}
 .v9fix b{color:var(--text)}
 
 #myPlayerSeason .predSummary .muted:last-child{max-width:58%;text-align:right}
+
+#authGate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.authBox{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.authBrand{font-size:36px;line-height:.85;font-weight:950;margin-bottom:24px}
+.authBrand span{color:var(--accent)}
+.authTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}
+.authTab{padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--panel2);color:var(--text);font-weight:850}
+.authTab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.authError{color:#ff6675;font-size:12px;margin-top:8px;display:none}
+.authStep{display:none}.authStep.active{display:block}
+.authTeamGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:250px;overflow:auto;margin-top:8px}
 </style>
 </head>
 <body>
+
+<div id="authGate">
+  <div class="authBox">
+    <div class="authBrand">FAN<br><span>RANK</span></div>
+    <div id="authWelcome" class="authStep active">
+      <div class="kicker">Welcome to FanRank</div>
+      <h1 style="margin:5px 0 8px">Play. Compete. Climb.</h1>
+      <div class="muted">Create an account or log in to access your leagues and predictions.</div>
+      <button class="btn primary full" id="showSignup">Create account</button>
+      <button class="btn full" id="showLogin">Log in</button>
+    </div>
+
+    <div id="authLogin" class="authStep">
+      <div class="kicker">Welcome back</div>
+      <h2 style="margin:5px 0">Log in</h2>
+      <label>Email</label><input id="loginEmail" class="field" type="email" placeholder="you@example.com">
+      <label>Password</label><input id="loginPassword" class="field" type="password" placeholder="••••••••">
+      <div id="loginError" class="authError"></div>
+      <button class="btn primary full" id="doLogin">Log in</button>
+      <button class="btn full" id="backWelcome">Back</button>
+      <button class="btn full" id="forgotPassword">Forgot password?</button>
+    </div>
+
+    <div id="authSignup" class="authStep">
+      <div class="kicker">Create account</div>
+      <h2 style="margin:5px 0">Join FanRank</h2>
+      <label>Name</label><input id="signupName" class="field" placeholder="e.g. Josh">
+      <label>Email</label><input id="signupEmail" class="field" type="email" placeholder="you@example.com">
+      <label>Password</label><input id="signupPassword" class="field" type="password" placeholder="At least 8 characters">
+      <label>Favourite team</label>
+      <div id="authTeams" class="authTeamGrid"></div>
+      <div id="signupError" class="authError"></div>
+      <button class="btn primary full" id="doSignup">Create account</button>
+      <button class="btn full" id="backSignup">Back</button>
+    </div>
+  </div>
+</div>
 <div class="app">
 <header class="top"><div class="logo">FAN<br><span>RANK</span></div><div class="bell">♧</div></header>
 
@@ -169,7 +217,7 @@ body{transition:background .2s,color .2s}
 <div class="section">Scoring rules</div><div class="card"><div class="seasonRow"><span class="title">Correct gameweek result</span><b>3 pts</b></div><div class="seasonRow"><span class="title">Season winner</span><b>15 pts</b></div><div class="seasonRow"><span class="title">2nd place</span><b>10 pts</b></div><div class="seasonRow"><span class="title">3rd place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">4th place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Each relegated team</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Top goalscorer</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Top assists</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Player of the Season</span><b>15 pts</b></div></div>
 
 <div class="notice" id="dataStatus">✓ Your FanRank data is stored on this device in V10.</div>
-<div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div><button class="btn full" id="openSettings">⚙️ Settings</button>
+<div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div><button class="btn full" id="openSettings">⚙️ Settings</button><button class="btn full" id="accountAccess">Sign in / Account</button>
 </section>
 
 
@@ -205,6 +253,22 @@ body{transition:background .2s,color .2s}
   </div>
   <div class="notice" style="margin-top:14px">Your favourite team's colour remains the app accent in both light and dark mode.</div>
  </div>
+</div>
+
+<div id="authModal" class="modal">
+  <div class="sheet">
+    <div class="kicker">FanRank account</div>
+    <h2 style="margin:4px 0 8px">Sign in to FanRank</h2>
+    <div class="muted">V11 adds the account layer needed for shared leagues. Demo mode works now; live accounts connect when the backend is configured.</div>
+    <label for="authName">Name</label>
+    <input id="authName" class="field" placeholder="e.g. Josh">
+    <label for="authEmail">Email</label>
+    <input id="authEmail" class="field" type="email" placeholder="you@example.com">
+    <label for="authPassword">Password</label>
+    <input id="authPassword" class="field" type="password" placeholder="••••••••">
+    <button class="btn primary full" id="authSignIn">Sign in / Create demo account</button>
+    <button class="btn full" id="authClose">Not now</button>
+  </div>
 </div>
 <div id="accountModal" class="modal">
   <div class="sheet">
@@ -244,6 +308,66 @@ body{transition:background .2s,color .2s}
 <nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
 <div id="toast" class="toast"></div>
 </div>
+
+
+<script>
+/* FanRank V11 — authentication + multiplayer backend adapter
+   The app can run in DEMO mode immediately. To go live, add a Supabase
+   project URL and anon key in fanrank-config.js. */
+window.FanRankConfig = window.FanRankConfig || {
+  backend: 'demo',
+  supabaseUrl: '',
+  supabaseAnonKey: ''
+};
+
+const FanRankAuth = (() => {
+  const KEY='fanrank_v11_session';
+  const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}};
+  const set=s=>localStorage.setItem(KEY,JSON.stringify(s));
+  return {
+    session:get,
+    isSignedIn:()=>!!get(),
+    signOut:()=>{localStorage.removeItem(KEY); location.reload()},
+    demoSignIn:(name,email)=>{
+      const session={user:{id:crypto.randomUUID(),name:name||'You',email:email||''},mode:'demo'};
+      set(session); return session;
+    }
+  };
+})();
+
+const FanRankAPI = {
+  mode:()=>FanRankConfig.backend,
+  async signUp(name,email,password){
+    if(FanRankConfig.backend==='demo') return FanRankAuth.demoSignIn(name,email);
+    throw new Error('Backend configuration required');
+  },
+  async signIn(email,password){
+    if(FanRankConfig.backend==='demo') return FanRankAuth.demoSignIn('You',email);
+    throw new Error('Backend configuration required');
+  },
+  async signOut(){ FanRankAuth.signOut(); },
+  async leagues(){
+    return FanRankDB.getLeagues();
+  },
+  async createLeague(name,entry){
+    const leagues=FanRankDB.getLeagues();
+    const league={id:crypto.randomUUID(),name,code:(name.replace(/[^a-z0-9]/gi,'').slice(0,6)||'LEAGUE').toUpperCase()+'-'+Math.floor(100+Math.random()*900),members:1,entry:Number(entry)||0,owner:true};
+    leagues.push(league); FanRankDB.saveLeagues(leagues); return league;
+  },
+  async joinLeague(code){
+    const leagues=FanRankDB.getLeagues();
+    const league=leagues.find(x=>x.code===String(code).trim().toUpperCase());
+    if(!league) throw new Error('Invite code not found');
+    league.members=(league.members||0)+1; FanRankDB.saveLeagues(leagues); return league;
+  },
+  async savePredictions(predictions){
+    return FanRankDB.savePredictions(predictions);
+  },
+  async getPredictions(){ return FanRankDB.getPredictions(); }
+};
+window.FanRankAuth=FanRankAuth;
+window.FanRankAPI=FanRankAPI;
+</script>
 
 <script>
 
@@ -554,5 +678,116 @@ const FanRankDB = (() => {
 })();
 window.FanRankDB = FanRankDB;
 
+</script>
+
+<script>
+(function(){
+  const modal=document.getElementById('authModal');
+  const access=document.getElementById('accountAccess');
+  const close=document.getElementById('authClose');
+  const sign=document.getElementById('authSignIn');
+  if(!modal||!access) return;
+  function open(){ modal.style.display='flex'; }
+  access.addEventListener('click',open);
+  close.addEventListener('click',()=>modal.style.display='none');
+  sign.addEventListener('click',async()=>{
+    const name=document.getElementById('authName').value.trim()||'You';
+    const email=document.getElementById('authEmail').value.trim();
+    const password=document.getElementById('authPassword').value;
+    if(!email||!password){toast('Enter an email and password');return;}
+    try{
+      const s=await FanRankAPI.signUp(name,email,password);
+      accountState.name=s.user.name;
+      localStorage.setItem('pp_account',JSON.stringify(accountState));
+      applyTeamTheme();
+      modal.style.display='none';
+      toast('FanRank account ready');
+    }catch(e){toast(e.message||'Unable to sign in');}
+  });
+  const s=FanRankAuth.session();
+  if(s){
+    document.getElementById('accountAccess').textContent='Account · '+s.user.name;
+  }
+})();
+</script>
+
+<script>
+(function(){
+ const gate=document.getElementById('authGate');
+ const welcome=document.getElementById('authWelcome'), login=document.getElementById('authLogin'), signup=document.getElementById('authSignup');
+ const accountKey='fanrank_v11_auth';
+ const existing=(()=>{try{return JSON.parse(localStorage.getItem(accountKey)||'null')}catch(e){return null}})();
+ let selectedTeam='Arsenal', selectedColour='#db0007';
+
+ function step(s){[welcome,login,signup].forEach(x=>x.classList.remove('active'));s.classList.add('active')}
+ function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block'}
+ function clearErr(id){const e=document.getElementById(id);e.style.display='none'}
+ function finish(user){
+   localStorage.setItem(accountKey,JSON.stringify(user));
+   localStorage.setItem('pp_onboarded','yes');
+   localStorage.setItem('pp_account',JSON.stringify({name:user.name,team:user.team,colour:user.colour}));
+   gate.style.display='none';
+   if(typeof accountState!=='undefined'){accountState.name=user.name;accountState.team=user.team;accountState.colour=user.colour; if(typeof applyTeamTheme==='function')applyTeamTheme();}
+   if(typeof toast==='function')toast('Welcome to FanRank, '+user.name);
+ }
+ function renderTeams(){
+   const wrap=document.getElementById('authTeams'); if(!wrap)return;
+   const teams=typeof teamPalette!=='undefined'?teamPalette:[['Arsenal','#db0007'],['Liverpool','#c8102e'],['Chelsea','#034694'],['Manchester City','#6cabdd'],['Manchester United','#da2919'],['Tottenham Hotspur','#132257']];
+   wrap.innerHTML='';
+   teams.forEach(([name,col])=>{
+     const b=document.createElement('button');b.type='button';b.className='teamChoice';
+     b.innerHTML='<span class="themeDot" style="--team:'+col+'"></span>'+name;
+     if(name===selectedTeam)b.classList.add('selected');
+     b.onclick=()=>{wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedTeam=name;selectedColour=col};
+     wrap.appendChild(b);
+   });
+ }
+ if(existing){gate.style.display='none';}
+ else {renderTeams();}
+
+ document.getElementById('showSignup').onclick=()=>{renderTeams();step(signup)};
+ document.getElementById('showLogin').onclick=()=>step(login);
+ document.getElementById('backWelcome').onclick=()=>{clearErr('loginError');step(welcome)};
+ document.getElementById('backSignup').onclick=()=>{clearErr('signupError');step(welcome)};
+
+ document.getElementById('doSignup').onclick=()=>{
+   clearErr('signupError');
+   const name=document.getElementById('signupName').value.trim();
+   const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+   const password=document.getElementById('signupPassword').value;
+   if(!name)return showErr('signupError','Please enter your name.');
+   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return showErr('signupError','Enter a valid email address.');
+   if(password.length<8)return showErr('signupError','Password must be at least 8 characters.');
+   const user={id:crypto.randomUUID(),name,email,team:selectedTeam,colour:selectedColour};
+   // Demo auth only: password is never stored.
+   finish(user);
+ };
+
+ document.getElementById('doLogin').onclick=()=>{
+   clearErr('loginError');
+   const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+   const password=document.getElementById('loginPassword').value;
+   const stored=JSON.parse(localStorage.getItem(accountKey)||'null');
+   if(!stored || stored.email!==email)return showErr('loginError','No local FanRank account matches that email.');
+   if(!password)return showErr('loginError','Enter your password.');
+   finish(stored);
+ };
+ document.getElementById('forgotPassword').onclick=()=>alert('Password reset will be connected to the live backend in the next backend stage.');
+})();
+</script>
+
+<script>
+(function(){
+ const access=document.getElementById('accountAccess');
+ if(!access)return;
+ access.addEventListener('contextmenu',e=>e.preventDefault());
+ const logout=document.createElement('button');
+ logout.className='btn full'; logout.id='fanrankSignOut'; logout.textContent='Sign out';
+ access.parentNode.insertBefore(logout,access.nextSibling);
+ logout.onclick=()=>{
+   localStorage.removeItem('fanrank_v11_auth');
+   location.reload();
+ };
+})();
 </script>
 </body></html>
