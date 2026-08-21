@@ -1,11 +1,17 @@
-# Premier Predictor v4
+# Premier Predictor v5
 
-New:
-- Account profile
-- Name selection
-- Favourite Premier League team selection
-- Team-colour accent theme
-- Change favourite team from Profile
-- Team colour shown on profile
+Added:
+- First-run account onboarding
+- Name + favourite team setup
+- Favourite-team theme
+- My Predictions screen
+- Gameweek prediction summary
+- Season prediction summary
+- Local submission status
+- Existing league creation/joining retained
 
-This is still local front-end functionality. Real accounts and shared leagues require a secure backend/database.
+Still local/demo:
+- Accounts are device-local
+- League joining is device-local
+- Real multiplayer requires a cloud backend
+- Live fixture/result data and server-side scoring still need to be added

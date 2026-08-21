@@ -20,6 +20,15 @@ label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
 .teamChoice{border:1px solid #30283f;border-radius:14px;padding:11px;background:#181522;color:#f7f3ff;text-align:left;font-weight:800}
 .teamChoice.selected{outline:2px solid var(--accent);background:#28133c}
 .themeDot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--team)}
+
+.onboard{position:fixed;inset:0;background:#090710f5;display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.onboardBox{width:min(420px,100%);background:#12101b;border:1px solid #30283f;border-radius:22px;padding:20px}
+.progress{height:5px;background:#30283f;border-radius:5px;overflow:hidden;margin:12px 0 18px}
+.progress i{display:block;height:100%;background:var(--accent);width:50%}
+.locked{opacity:.65}
+.predSummary{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.predSummary:last-child{border-bottom:0}
+.check{color:var(--green);font-weight:900}
 </style>
 </head>
 <body>
@@ -45,6 +54,15 @@ label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
 <button class="btn primary full" id="saveSeason">Save season predictions</button>
 </section>
 
+
+<section id="mypredictions" class="screen content">
+  <div class="section">📋 My Predictions</div>
+  <div class="notice">Your predictions stay private until the relevant deadline.</div>
+  <div class="section">Gameweek 1</div>
+  <div class="card" id="myGW"></div>
+  <div class="section">Season predictions</div>
+  <div class="card" id="mySeason"></div>
+</section>
 <section id="leaderboard" class="screen content">
 <div class="section">🏆 Leaderboard</div><div class="card">
 <div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220</span></div>
@@ -74,6 +92,20 @@ label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
 
 
 
+
+<div id="onboard" class="onboard">
+  <div class="onboardBox">
+    <div class="kicker">Welcome to Premier Predictor</div>
+    <h2 style="margin:5px 0">Create your player profile</h2>
+    <div class="muted">Your favourite team controls your personal app colours.</div>
+    <div class="progress"><i></i></div>
+    <label for="onboardName">Your name</label>
+    <input id="onboardName" class="field" placeholder="e.g. Josh">
+    <label>Favourite team</label>
+    <div id="onboardTeams" class="accountGrid"></div>
+    <button class="btn primary full" id="finishOnboard">Continue to Premier Predictor</button>
+  </div>
+</div>
 <div id="accountModal" class="modal">
   <div class="sheet">
     <div class="kicker">Account</div>
@@ -109,7 +141,7 @@ label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
     </div>
   </div>
 </div>
-<nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
+<nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="mypredictions"><span class="navIcon">📋</span>My Picks</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
 <div id="toast" class="toast"></div>
 </div>
 
@@ -147,6 +179,73 @@ document.getElementById('saveAccount').addEventListener('click',()=>{
 });
 document.getElementById('changeTeam').addEventListener('click',openAccount);
 applyTeamTheme();
+
+
+const ppV5Teams = teamPalette || [];
+const onboard = document.getElementById('onboard');
+function buildOnboard(){
+  const wrap=document.getElementById('onboardTeams');
+  wrap.innerHTML='';
+  ppV5Teams.forEach(([name,colour])=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='teamChoice';
+    b.innerHTML='<span class="themeDot" style="--team:'+colour+'"></span>'+name;
+    if(name===accountState.team)b.classList.add('selected');
+    b.addEventListener('click',()=>{
+      wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      accountState.team=name; accountState.colour=colour;
+    });
+    wrap.appendChild(b);
+  });
+}
+function renderPredictionSummary(){
+  const gw=document.getElementById('myGW');
+  const ss=document.getElementById('mySeason');
+  if(!gw||!ss)return;
+  gw.innerHTML='';
+  matches.forEach((m,i)=>{
+    const v=state.gw[i];
+    const row=document.createElement('div'); row.className='predSummary';
+    row.innerHTML='<span class="'+(v?'check':'muted')+'">'+(v?'✓':'○')+'</span><span class="name">'+m[0]+' vs '+m[1]+'</span><span class="muted">'+(v?(v==='home'?m[0]:v==='away'?m[1]:'Draw'):'Not picked')+'</span>';
+    gw.appendChild(row);
+  });
+  ss.innerHTML='';
+  seasonQs.forEach((q,i)=>{
+    const v=state.season[i];
+    const row=document.createElement('div'); row.className='predSummary';
+    row.innerHTML='<span class="'+(v?'check':'muted')+'">'+(v?'✓':'○')+'</span><span class="name">'+q[0]+'</span><span class="muted">'+(v||'Not picked')+'</span>';
+    ss.appendChild(row);
+  });
+}
+document.getElementById('finishOnboard').addEventListener('click',()=>{
+  const name=document.getElementById('onboardName').value.trim()||'You';
+  accountState.name=name;
+  localStorage.setItem('pp_account',JSON.stringify(accountState));
+  applyTeamTheme();
+  onboard.style.display='none';
+  toast('Welcome, '+name);
+});
+buildOnboard();
+if(!localStorage.getItem('pp_onboarded')){
+  onboard.style.display='flex';
+  document.getElementById('onboardName').value=accountState.name==='You'?'':accountState.name;
+}
+document.getElementById('saveGW').addEventListener('click',()=>{
+  if(Object.keys(state.gw).length<10){toast('Pick all 10 matches first');return}
+  localStorage.setItem('pp_gw_saved','yes');
+  toast('Gameweek predictions locked in');
+  renderPredictionSummary();
+});
+document.getElementById('saveSeason').addEventListener('click',()=>{
+  if(Object.keys(state.season).length<10){toast('Complete all 10 season predictions');return}
+  localStorage.setItem('pp_season_saved','yes');
+  toast('Season predictions submitted');
+  renderPredictionSummary();
+});
+const oldFinish=document.getElementById('finishOnboard');
+oldFinish.addEventListener('click',()=>localStorage.setItem('pp_onboarded','yes'));
+document.querySelectorAll('[data-go="mypredictions"]').forEach(b=>b.addEventListener('click',renderPredictionSummary));
 
 const leagueStore=JSON.parse(localStorage.getItem('pp_leagues')||'null')||[
  {name:'Pallett League',code:'PALLETT-26',members:8,entry:50,owner:true}
