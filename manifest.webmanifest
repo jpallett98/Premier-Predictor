@@ -1,6 +1,6 @@
 {
-  "name": "Premier Predictor",
-  "short_name": "Premier Predictor",
+  "name": "FanRank",
+  "short_name": "FanRank",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#090710",

@@ -1,9 +1,13 @@
-# Premier Predictor v8
+# FanRank v9
 
-Fixes:
-- OPEN is green text only
-- CLOSED is red text only
-- Light mode now overrides the remaining dark hard-coded UI surfaces
-- Cards, hero, navigation, modal, onboarding, fields, selects, buttons and notices adapt to light mode
-- Favourite team remains the accent colour
-- Existing V7 interface retained
+Changes:
+- Working brand name changed to FanRank
+- Both Home Gameweek status indicators use green OPEN / red CLOSED text only
+- Added searchable player selectors for:
+  - Top goalscorer
+  - Most assists
+  - Player of the Season
+- Player results show player + club
+- Favourite team theme, light/dark mode and previous interface refinements retained
+
+Note: the included player list is a prototype subset. Before production, replace it with the complete current Premier League squad/player dataset from a reliable data source.

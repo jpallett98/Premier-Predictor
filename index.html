@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0714">
-<title>Premier Predictor</title>
+<title>FanRank</title>
 <style>
 :root{--bg:#090710;--panel:#12101b;--panel2:#181522;--line:#30283f;--text:#f7f3ff;--muted:#aaa2b8;--accent:#a855f7;--green:#43e58c;--gold:#f4c84a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -55,6 +55,13 @@ body{transition:background .2s,color .2s}
 :root[data-mode="light"] .nav{background:rgba(255,255,255,.94)}
 :root[data-mode="light"] .logo{color:var(--text)}
 :root[data-mode="light"] .muted{color:var(--muted)}
+
+.playerSearch{margin:8px 0 10px}
+.playerResults{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.playerRow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.playerRow:last-child{border-bottom:0}
+.playerMeta{font-size:12px;color:var(--muted)}
+.selectedPlayer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid var(--accent)}
 </style>
 </head>
 <body>
@@ -125,7 +132,7 @@ body{transition:background .2s,color .2s}
 
 <div id="onboard" class="onboard">
   <div class="onboardBox">
-    <div class="kicker">Welcome to Premier Predictor</div>
+    <div class="kicker">Welcome to FanRank</div>
     <h2 style="margin:5px 0">Create your player profile</h2>
     <div class="muted">Your favourite team controls your personal app colours.</div>
     <div class="progress"><i></i></div>
@@ -133,7 +140,7 @@ body{transition:background .2s,color .2s}
     <input id="onboardName" class="field" placeholder="e.g. Josh">
     <label>Favourite team</label>
     <div id="onboardTeams" class="accountGrid"></div>
-    <button class="btn primary full" id="finishOnboard">Continue to Premier Predictor</button>
+    <button class="btn primary full" id="finishOnboard">Continue to FanRank</button>
   </div>
 </div>
 
@@ -143,7 +150,7 @@ body{transition:background .2s,color .2s}
    <div><div class="kicker">Settings</div><h2 style="margin:4px 0">Appearance</h2></div>
    <button class="btn" id="closeSettings">Close</button>
   </div>
-  <div class="muted" style="margin-top:5px">Choose how Premier Predictor looks on your device.</div>
+  <div class="muted" style="margin-top:5px">Choose how FanRank looks on your device.</div>
   <div class="settingsSection">
    <div class="accountGrid">
     <button class="modeBtn" data-mode-choice="light">☀️ Light</button>
@@ -158,7 +165,7 @@ body{transition:background .2s,color .2s}
   <div class="sheet">
     <div class="kicker">Account</div>
     <h2 style="margin:4px 0 8px">Create your profile</h2>
-    <div class="muted">Choose your favourite team. Premier Predictor will use its colours for your personal theme.</div>
+    <div class="muted">Choose your favourite team. FanRank will use its colours for your personal theme.</div>
     <label for="displayName">Your name</label>
     <input id="displayName" class="field" placeholder="e.g. Josh">
     <label>Favourite team</label>
@@ -325,6 +332,39 @@ if(window.matchMedia){
   if((localStorage.getItem('pp_mode')||'dark')==='system') applyMode('system');
  });
 }
+
+
+const fanRankPlayers=[["Erling Haaland", "Manchester City"], ["Mohamed Salah", "Liverpool"], ["Bukayo Saka", "Arsenal"], ["Alexander Isak", "Liverpool"], ["Cole Palmer", "Chelsea"], ["Son Heung-min", "Tottenham Hotspur"], ["Ollie Watkins", "Aston Villa"], ["Bruno Fernandes", "Manchester United"], ["Phil Foden", "Manchester City"], ["Declan Rice", "Arsenal"], ["Martin \u00d8degaard", "Arsenal"], ["William Saliba", "Arsenal"], ["Virgil van Dijk", "Liverpool"], ["Trent Alexander-Arnold", "Liverpool"], ["Luis D\u00edaz", "Liverpool"], ["Darwin N\u00fa\u00f1ez", "Liverpool"], ["Dominic Solanke", "Tottenham Hotspur"], ["Anthony Gordon", "Newcastle United"], ["Jarrod Bowen", "West Ham United"], ["Eberechi Eze", "Crystal Palace"], ["Matheus Cunha", "Manchester United"], ["Morgan Rogers", "Aston Villa"], ["Jo\u00e3o Pedro", "Brighton"], ["Kaoru Mitoma", "Brighton"], ["Chris Wood", "Nottingham Forest"], ["Nicolas Jackson", "Chelsea"], ["Rasmus H\u00f8jlund", "Manchester United"], ["Kai Havertz", "Arsenal"], ["Gabriel Martinelli", "Arsenal"], ["Gabriel Jesus", "Arsenal"]];
+const playerCategories=[
+ ['Top goalscorer','topScorer'],
+ ['Most assists','topAssists'],
+ ['Player of the Season','playerOfSeason']
+];
+function buildPlayerPickers(){
+ const host=document.getElementById('playerFields'); if(!host)return;
+ host.innerHTML='';
+ playerCategories.forEach(([label,key])=>{
+   const wrap=document.createElement('div'); wrap.style.marginTop='14px';
+   wrap.innerHTML='<label>'+label+'</label><input class="field playerSearch" data-key="'+key+'" placeholder="🔍 Search player..."><div class="playerResults" data-results="'+key+'"></div><div class="selectedPlayer" data-selected="'+key+'" style="display:none"></div>';
+   host.appendChild(wrap);
+   const input=wrap.querySelector('input');
+   const results=wrap.querySelector('[data-results]');
+   const selected=wrap.querySelector('[data-selected]');
+   function render(){
+     const q=input.value.trim().toLowerCase();
+     const list=fanRankPlayers.filter(p=>!q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q)).slice(0,12);
+     results.innerHTML=list.map(p=>'<div class="playerRow" data-player="'+p[0].replace(/"/g,'&quot;')+'"><span>'+p[0]+'</span><span class="playerMeta">'+p[1]+'</span></div>').join('') || '<div class="playerRow"><span class="playerMeta">No players found</span></div>';
+     results.querySelectorAll('[data-player]').forEach(row=>row.addEventListener('click',()=>{
+       input.value=row.dataset.player;
+       const p=fanRankPlayers.find(x=>x[0]===row.dataset.player);
+       selected.textContent=p[0]+' · '+p[1]; selected.style.display='flex';
+       results.innerHTML=''; state.playerPreds=state.playerPreds||{}; state.playerPreds[key]=p[0];
+     }));
+   }
+   input.addEventListener('input',render); render();
+ });
+}
+buildPlayerPickers();
 
 const leagueStore=JSON.parse(localStorage.getItem('pp_leagues')||'null')||[
  {name:'Pallett League',code:'PALLETT-26',members:8,entry:50,owner:true}
