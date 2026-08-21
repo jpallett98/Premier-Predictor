@@ -580,53 +580,208 @@ fanRankRenderPlayerPicker('fanrankScorerSearch','fanrankScorerResults','fanrankS
 fanRankRenderPlayerPicker('fanrankAssistSearch','fanrankAssistResults','fanrankAssistSelected','topAssists');
 fanRankRenderPlayerPicker('fanrankPotySearch','fanrankPotyResults','fanrankPotySelected','playerOfSeason');
 
-const leagueStore=JSON.parse(localStorage.getItem('pp_leagues')||'null')||[
- {name:'Pallett League',code:'PALLETT-26',members:8,entry:50,owner:true}
-];
-let activeLeague=leagueStore[0];
-function saveLeagues(){localStorage.setItem('pp_leagues',JSON.stringify(leagueStore))}
-function renderLeagues(){
- const list=document.getElementById('leagueList'); list.innerHTML='';
- leagueStore.forEach((l,i)=>{
-  const row=document.createElement('div'); row.className='rankRow';
-  row.innerHTML='<span class="avatar">'+l.name[0].toUpperCase()+'</span><span class="name">'+l.name+'<div class="muted">'+l.members+' members · '+l.code+'</div></span><button class="btn '+(activeLeague===l?'primary':'')+'" data-league="'+i+'">'+(activeLeague===l?'Active':'Select')+'</button>';
-  list.appendChild(row);
- });
- list.querySelectorAll('[data-league]').forEach(b=>b.addEventListener('click',()=>{
-  activeLeague=leagueStore[Number(b.dataset.league)];
-  document.getElementById('activeLeagueName').textContent=activeLeague.name;
-  document.getElementById('memberCount').textContent='👥 '+activeLeague.members+' members';
-  renderLeagues(); toast(activeLeague.name+' selected');
- }));
+
+let activeLeague = null;
+const LEAGUE_KEY='fanrank_active_league';
+
+async function currentUser(){
+  const {data:{user},error}=await window.supabaseClient.auth.getUser();
+  if(error || !user) throw new Error('Please log in again.');
+  return user;
 }
-document.getElementById('leagueBar').addEventListener('click',()=>{
- document.getElementById('leagueModal').style.display='flex'; renderLeagues();
- document.getElementById('leagueForm').style.display='none'; document.getElementById('joinForm').style.display='none';
+
+async function fetchMyLeagues(){
+  const user=await currentUser();
+  const {data,error}=await window.supabaseClient
+    .from('league_members')
+    .select('league_id,role,leagues(id,name,invite_code,entry_amount,created_at)')
+    .eq('user_id',user.id)
+    .order('created_at',{ascending:true});
+  if(error) throw error;
+  return (data||[]).map(x=>({...x.leagues,role:x.role}));
+}
+
+async function fetchMembers(leagueId){
+  const {data,error}=await window.supabaseClient
+    .from('league_members')
+    .select('user_id,role,joined_at,profiles(display_name,favourite_team)')
+    .eq('league_id',leagueId)
+    .order('joined_at',{ascending:true});
+  if(error) throw error;
+  return data||[];
+}
+
+function setActiveLeague(league){
+  activeLeague=league;
+  if(league) localStorage.setItem(LEAGUE_KEY,league.id);
+  else localStorage.removeItem(LEAGUE_KEY);
+  document.getElementById('activeLeagueName').textContent=league?.name||'No league selected';
+  document.getElementById('memberCount').textContent=league?'👥 loading…':'👥 0 members';
+}
+
+async function chooseInitialLeague(){
+  const leagues=await fetchMyLeagues();
+  if(!leagues.length){setActiveLeague(null);return leagues;}
+  const saved=localStorage.getItem(LEAGUE_KEY);
+  const found=leagues.find(x=>x.id===saved)||leagues[0];
+  setActiveLeague(found);
+  const members=await fetchMembers(found.id);
+  document.getElementById('memberCount').textContent='👥 '+members.length+' members';
+  return leagues;
+}
+
+async function renderLeagues(){
+  const list=document.getElementById('leagueList');
+  list.innerHTML='<div class="muted">Loading leagues…</div>';
+  try{
+    const leagues=await fetchMyLeagues();
+    if(!leagues.length){
+      list.innerHTML='<div class="notice">You are not in any leagues yet. Create one or join with an invite code.</div>';
+      setActiveLeague(null);
+      return;
+    }
+    if(!activeLeague || !leagues.some(x=>x.id===activeLeague.id)) setActiveLeague(leagues[0]);
+    const membersByLeague={};
+    for(const l of leagues){
+      try{membersByLeague[l.id]=(await fetchMembers(l.id)).length}catch(e){membersByLeague[l.id]=0}
+    }
+    list.innerHTML='';
+    leagues.forEach(l=>{
+      const row=document.createElement('div');row.className='rankRow';
+      const active=activeLeague&&activeLeague.id===l.id;
+      row.innerHTML='<span class="avatar">'+l.name.charAt(0).toUpperCase()+'</span>'+
+        '<span class="name">'+l.name+'<div class="muted">'+membersByLeague[l.id]+' members · '+l.invite_code+'</div></span>'+
+        '<button class="btn '+(active?'primary':'')+'" data-league="'+l.id+'">'+(active?'Active':'Select')+'</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('[data-league]').forEach(b=>b.addEventListener('click',async()=>{
+      const l=leagues.find(x=>x.id===b.dataset.league);
+      setActiveLeague(l);
+      const members=await fetchMembers(l.id);
+      document.getElementById('memberCount').textContent='👥 '+members.length+' members';
+      await renderActiveLeaguePage();
+      await renderLeagues();
+      toast(l.name+' selected');
+    }));
+    await renderActiveLeaguePage();
+  }catch(e){
+    list.innerHTML='<div class="notice">'+(e.message||'Unable to load leagues.')+'</div>';
+  }
+}
+
+async function renderActiveLeaguePage(){
+  const sec=document.getElementById('league');
+  if(!sec)return;
+  if(!activeLeague){
+    sec.innerHTML='<div class="section">👥 Your League</div><div class="notice">You are not in a league yet. Use the league bar above to create or join one.</div>';
+    return;
+  }
+  try{
+    const members=await fetchMembers(activeLeague.id);
+    sec.innerHTML=
+      '<div class="section">👥 '+activeLeague.name+'</div>'+
+      '<div class="card"><div class="kicker">Invite code</div><div class="code">'+activeLeague.invite_code+'</div>'+
+      '<button class="btn full" id="copy">Copy invite code</button></div>'+
+      '<div class="section">Members</div><div class="card" id="realMembers"></div>';
+    const box=document.getElementById('realMembers');
+    members.forEach((m,i)=>{
+      const name=m.profiles?.display_name||'FanRank user';
+      const row=document.createElement('div');row.className='rankRow';
+      row.innerHTML='<span class="rank">'+(i+1)+'</span><span class="avatar">'+name.charAt(0).toUpperCase()+'</span>'+
+        '<span class="name">'+name+'<div class="muted">'+(m.profiles?.favourite_team||'')+(m.role==='owner'?' · Owner':'')+'</div></span>'+
+        '<span class="points">0 pts</span>';
+      box.appendChild(row);
+    });
+    if(!members.length)box.innerHTML='<div class="muted">No members yet.</div>';
+    document.getElementById('copy').addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(activeLeague.invite_code);toast('Invite code copied')}
+      catch(e){toast('Invite code: '+activeLeague.invite_code)}
+    });
+  }catch(e){
+    sec.innerHTML='<div class="notice">'+(e.message||'Unable to load league.')+'</div>';
+  }
+}
+
+document.getElementById('leagueBar').addEventListener('click',async()=>{
+  document.getElementById('leagueModal').style.display='flex';
+  document.getElementById('leagueForm').style.display='none';
+  document.getElementById('joinForm').style.display='none';
+  await renderLeagues();
 });
 document.getElementById('closeLeague').addEventListener('click',()=>document.getElementById('leagueModal').style.display='none');
 document.getElementById('createLeague').addEventListener('click',()=>{
- document.getElementById('leagueForm').style.display='block'; document.getElementById('joinForm').style.display='none';
+  document.getElementById('leagueForm').style.display='block';
+  document.getElementById('joinForm').style.display='none';
 });
 document.getElementById('joinLeague').addEventListener('click',()=>{
- document.getElementById('joinForm').style.display='block'; document.getElementById('leagueForm').style.display='none';
+  document.getElementById('joinForm').style.display='block';
+  document.getElementById('leagueForm').style.display='none';
 });
-document.getElementById('saveLeague').addEventListener('click',()=>{
- const name=document.getElementById('leagueName').value.trim();
- const entry=Number(document.getElementById('leagueEntry').value||0);
- if(!name){toast('Enter a league name');return}
- const code=(name.replace(/[^a-z0-9]/gi,'').slice(0,6).toUpperCase()||'LEAGUE')+'-'+Math.floor(10+Math.random()*90);
- const l={name,code,members:1,entry,owner:true}; leagueStore.push(l); activeLeague=l; saveLeagues();
- document.getElementById('activeLeagueName').textContent=name; document.getElementById('memberCount').textContent='👥 1 member';
- document.getElementById('leagueForm').style.display='none'; renderLeagues(); toast('League created · '+code);
+
+async function makeInviteCode(name){
+  const base=(name.replace(/[^a-z0-9]/gi,'').slice(0,6)||'LEAGUE').toUpperCase();
+  for(let i=0;i<8;i++){
+    const code=base+'-'+Math.floor(100+Math.random()*900);
+    const {data}=await window.supabaseClient.from('leagues').select('id').eq('invite_code',code).maybeSingle();
+    if(!data)return code;
+  }
+  throw new Error('Could not generate a unique invite code.');
+}
+
+document.getElementById('saveLeague').addEventListener('click',async()=>{
+  const btn=document.getElementById('saveLeague');
+  const name=document.getElementById('leagueName').value.trim();
+  const entry=Number(document.getElementById('leagueEntry').value||0);
+  if(!name){toast('Enter a league name');return}
+  btn.disabled=true;
+  try{
+    const user=await currentUser();
+    const invite=await makeInviteCode(name);
+    const {data:league,error}=await window.supabaseClient.from('leagues')
+      .insert({name,invite_code:invite,entry_amount:entry,owner_id:user.id})
+      .select().single();
+    if(error)throw error;
+    const {error:memberError}=await window.supabaseClient.from('league_members')
+      .insert({league_id:league.id,user_id:user.id,role:'owner'});
+    if(memberError)throw memberError;
+    activeLeague=league;setActiveLeague(league);
+    document.getElementById('leagueName').value='';
+    document.getElementById('leagueForm').style.display='none';
+    document.getElementById('leagueModal').style.display='none';
+    await renderActiveLeaguePage();await renderLeagues();
+    toast('League created · '+invite);
+  }catch(e){toast(e.message||'Unable to create league')}
+  finally{btn.disabled=false}
 });
-document.getElementById('saveJoin').addEventListener('click',()=>{
- const code=document.getElementById('inviteCode').value.trim().toUpperCase();
- const l=leagueStore.find(x=>x.code===code);
- if(!l){toast('Invite code not found in this demo');return}
- l.members+=1; activeLeague=l; saveLeagues();
- document.getElementById('activeLeagueName').textContent=l.name; document.getElementById('memberCount').textContent='👥 '+l.members+' members';
- document.getElementById('joinForm').style.display='none'; renderLeagues(); toast('Joined '+l.name);
+
+document.getElementById('saveJoin').addEventListener('click',async()=>{
+  const btn=document.getElementById('saveJoin');
+  const code=document.getElementById('inviteCode').value.trim().toUpperCase();
+  if(!code){toast('Enter an invite code');return}
+  btn.disabled=true;
+  try{
+    const user=await currentUser();
+    const {data:league,error}=await window.supabaseClient.from('leagues')
+      .select('*').eq('invite_code',code).maybeSingle();
+    if(error)throw error;
+    if(!league)throw new Error('Invite code not found');
+    const {error:memberError}=await window.supabaseClient.from('league_members')
+      .insert({league_id:league.id,user_id:user.id,role:'member'});
+    if(memberError){
+      if(memberError.code==='23505')throw new Error('You are already in this league.');
+      throw memberError;
+    }
+    activeLeague=league;setActiveLeague(league);
+    document.getElementById('inviteCode').value='';
+    document.getElementById('joinForm').style.display='none';
+    document.getElementById('leagueModal').style.display='none';
+    await renderActiveLeaguePage();await renderLeagues();
+    toast('Joined '+league.name);
+  }catch(e){toast(e.message||'Unable to join league')}
+  finally{btn.disabled=false}
 });
+
+(async()=>{try{await chooseInitialLeague();await renderActiveLeaguePage()}catch(e){console.warn(e)}})();
 
 const matches=[
 ["Arsenal","Coventry City"],["Hull City","Manchester United"],["Everton","Crystal Palace"],["Ipswich Town","Sunderland"],["Nottingham Forest","Leeds United"],["Brentford","Tottenham Hotspur"],["Brighton & Hove Albion","Aston Villa"],["Manchester City","AFC Bournemouth"],["Newcastle United","Liverpool"],["Fulham","Chelsea"]
