@@ -1,15 +1,12 @@
-# FanRank v9
+# FanRank v9 — fixed
 
-Visible interface update:
-- FanRank branding
-- Both Home Gameweek OPEN/CLOSED statuses use green/red text only
-- Three clearly visible searchable player selectors:
-  - Top Goalscorer
-  - Most Assists
-  - Player of the Season
-- Search by player name or club
-- Selected player and club are shown
-- Picks are retained locally in the prototype
-- Light/dark mode and previous navigation refinements retained
+This fixes the V9 interface wiring:
+- Visible FanRank branding in the app header
+- Both Home OPEN indicators are green text
+- CLOSED state is red text
+- Search boxes are actually present for Top Goalscorer, Most Assists and Player of the Season
+- The old Select Player dropdown rows are removed
+- Player selections are retained locally
+- Light/dark mode retained
 
-The official Premier League has a searchable 2026/27 player directory. The prototype pool here is seeded for the interface; production should use a maintained official/current data feed rather than a hard-coded list.
+The player list is still prototype data and should be replaced with a complete maintained 2026/27 Premier League dataset before production.
