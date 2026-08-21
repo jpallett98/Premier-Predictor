@@ -1,0 +1,40 @@
+{
+  "users": {
+    "id": "uuid",
+    "name": "text",
+    "favourite_team": "text",
+    "accent_colour": "text",
+    "created_at": "timestamp"
+  },
+  "leagues": {
+    "id": "uuid",
+    "name": "text",
+    "invite_code": "text",
+    "owner_id": "uuid",
+    "entry_amount": "numeric",
+    "created_at": "timestamp"
+  },
+  "league_members": {
+    "league_id": "uuid",
+    "user_id": "uuid",
+    "joined_at": "timestamp"
+  },
+  "predictions": {
+    "id": "uuid",
+    "user_id": "uuid",
+    "league_id": "uuid",
+    "gameweek": "integer nullable",
+    "prediction_type": "text",
+    "fixture_id": "text nullable",
+    "selected_value": "text",
+    "locked_at": "timestamp nullable",
+    "created_at": "timestamp"
+  },
+  "results": {
+    "id": "uuid",
+    "prediction_type": "text",
+    "fixture_id": "text nullable",
+    "correct_value": "text",
+    "points": "integer"
+  }
+}

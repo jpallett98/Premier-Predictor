@@ -1,12 +1,14 @@
-# FanRank v9 — fixed
+# FanRank V10
 
-This fixes the V9 interface wiring:
-- Visible FanRank branding in the app header
-- Both Home OPEN indicators are green text
-- CLOSED state is red text
-- Search boxes are actually present for Top Goalscorer, Most Assists and Player of the Season
-- The old Select Player dropdown rows are removed
-- Player selections are retained locally
-- Light/dark mode retained
+The interface is intentionally unchanged.
 
-The player list is still prototype data and should be replaced with a complete maintained 2026/27 Premier League dataset before production.
+V10 begins the backend transition:
+- Centralised FanRankDB data layer
+- User/profile storage abstraction
+- League storage abstraction
+- Prediction storage abstraction
+- Backend schema for users, leagues, members, predictions and results
+- Existing prototype remains playable locally
+
+Important:
+This version is NOT yet a real multiplayer backend. Data is still stored locally on the device. The next backend step is to connect FanRankDB to a hosted database/authentication service so multiple devices can share the same leagues and predictions.

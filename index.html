@@ -71,6 +71,8 @@ body{transition:background .2s,color .2s}
 
 .v9fix{margin:0 15px 12px;padding:9px 12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:11px;color:var(--muted)}
 .v9fix b{color:var(--text)}
+
+#myPlayerSeason .predSummary .muted:last-child{max-width:58%;text-align:right}
 </style>
 </head>
 <body>
@@ -134,6 +136,12 @@ body{transition:background .2s,color .2s}
   <div class="card" id="myGW"></div>
   <div class="section">Season predictions</div>
   <div class="card" id="mySeason"></div>
+  <div class="section">Player predictions</div>
+  <div class="card" id="myPlayerSeason">
+    <div class="predSummary"><span class="muted">○</span><span class="name">Top Goalscorer</span><span class="muted">Not picked</span></div>
+    <div class="predSummary"><span class="muted">○</span><span class="name">Most Assists</span><span class="muted">Not picked</span></div>
+    <div class="predSummary"><span class="muted">○</span><span class="name">Player of the Season</span><span class="muted">Not picked</span></div>
+  </div>
 </section>
 <section id="leaderboard" class="screen content">
 <div class="section">🏆 Leaderboard</div><div class="card">
@@ -159,6 +167,8 @@ body{transition:background .2s,color .2s}
 
 <div class="section">👤 Profile</div><div class="card"><div class="big">You</div><div class="muted">214 total points</div></div>
 <div class="section">Scoring rules</div><div class="card"><div class="seasonRow"><span class="title">Correct gameweek result</span><b>3 pts</b></div><div class="seasonRow"><span class="title">Season winner</span><b>15 pts</b></div><div class="seasonRow"><span class="title">2nd place</span><b>10 pts</b></div><div class="seasonRow"><span class="title">3rd place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">4th place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Each relegated team</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Top goalscorer</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Top assists</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Player of the Season</span><b>15 pts</b></div></div>
+
+<div class="notice" id="dataStatus">✓ Your FanRank data is stored on this device in V10.</div>
 <div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div><button class="btn full" id="openSettings">⚙️ Settings</button>
 </section>
 
@@ -307,6 +317,23 @@ function renderPredictionSummary(){
     row.innerHTML='<span class="'+(v?'check':'muted')+'">'+(v?'✓':'○')+'</span><span class="name">'+q[0]+'</span><span class="muted">'+(v||'Not picked')+'</span>';
     ss.appendChild(row);
   });
+
+  const ps=document.getElementById('myPlayerSeason');
+  if(ps){
+    const picks=JSON.parse(localStorage.getItem('fanrank_player_picks')||'{}');
+    const playerRows=[
+      ['topScorer','Top Goalscorer'],
+      ['topAssists','Most Assists'],
+      ['playerOfSeason','Player of the Season']
+    ];
+    ps.innerHTML='';
+    playerRows.forEach(([key,label])=>{
+      const p=picks[key];
+      const row=document.createElement('div'); row.className='predSummary';
+      row.innerHTML='<span class="'+(p?'check':'muted')+'">'+(p?'✓':'○')+'</span><span class="name">'+label+'</span><span class="muted">'+(p?(p.name+' · '+p.club):'Not picked')+'</span>';
+      ps.appendChild(row);
+    });
+  }
 }
 document.getElementById('finishOnboard').addEventListener('click',()=>{
   const name=document.getElementById('onboardName').value.trim()||'You';
@@ -394,6 +421,7 @@ function fanRankRenderPlayerPicker(inputId, resultsId, selectedId, pickKey) {
       const name=btn.dataset.name, club=btn.dataset.club;
       fanRankPlayerPicks[pickKey]={name,club};
       localStorage.setItem('fanrank_player_picks',JSON.stringify(fanRankPlayerPicks));
+      if(typeof renderPredictionSummary==='function') renderPredictionSummary();
       input.value=name;
       selected.style.display='flex';
       selected.innerHTML='<span><b>'+name+'</b><br><span class="player-club">'+club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
@@ -498,5 +526,33 @@ document.getElementById("saveGW").addEventListener("click",()=>{if(Object.keys(s
 document.getElementById("saveSeason").addEventListener("click",()=>{if(Object.keys(state.season).length<7 || Object.keys(fanRankPlayerPicks).length<3){toast("Complete all 7 team picks and 3 player picks");return}toast("Season predictions saved")});
 document.querySelectorAll('[data-match]').forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll('[data-match]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected");toast("Prediction saved: "+b.dataset.match)}));
 document.getElementById("copy").addEventListener("click",()=>toast("Invite code: PALLETT-26"));
+
+/* FanRank V10 data layer
+   This is the first step toward a real backend.
+   All app data now flows through one storage API so it can later be
+   replaced by Supabase/Firebase/API calls without rebuilding the UI.
+*/
+const FanRankDB = (() => {
+  const prefix = 'fanrank_v10_';
+  function read(key, fallback) {
+    try { const raw = localStorage.getItem(prefix + key); return raw ? JSON.parse(raw) : fallback; }
+    catch(e) { return fallback; }
+  }
+  function write(key, value) {
+    localStorage.setItem(prefix + key, JSON.stringify(value));
+    return value;
+  }
+  return {
+    getUser: () => read('user', {id: crypto.randomUUID(), name:'You', team:'Arsenal', colour:'#db0007'}),
+    saveUser: u => write('user', u),
+    getLeagues: () => read('leagues', [{id:'demo',name:'Pallett League',code:'PALLETT-26',members:8,entry:50}]),
+    saveLeagues: ls => write('leagues', ls),
+    getPredictions: () => read('predictions', {gameweek:{},season:{},players:{}}),
+    savePredictions: p => write('predictions', p),
+    clear: () => Object.keys(localStorage).filter(k=>k.startsWith(prefix)).forEach(k=>localStorage.removeItem(k))
+  };
+})();
+window.FanRankDB = FanRankDB;
+
 </script>
 </body></html>
