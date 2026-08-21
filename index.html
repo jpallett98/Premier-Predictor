@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0714">
+<title>FanRank</title>
+<style>
+:root{--bg:#090710;--panel:#12101b;--panel2:#181522;--line:#30283f;--text:#f7f3ff;--muted:#aaa2b8;--accent:#a855f7;--green:#43e58c;--gold:#f4c84a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{width:min(440px,100%);margin:auto;min-height:100vh;padding-bottom:92px}.top{padding:25px 18px 12px;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:950;font-size:23px;line-height:.92}.logo span{color:var(--accent)}.bell{font-size:22px}.content{padding:8px 15px}.screen{display:none}.screen.active{display:block}
+.leaguebar,.card,.hero{background:var(--panel);border:1px solid var(--line);border-radius:19px}.leaguebar{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;margin:0 15px 12px}.hero{padding:18px;margin-bottom:12px;background:linear-gradient(135deg,#1b1029,#0f0c16)}.heroGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.big{font-size:42px;font-weight:950;line-height:1;margin:5px 0}.accent{color:var(--accent)}.green{color:var(--green)}.gold{color:var(--gold)}.muted{color:var(--muted);font-size:12px}.kicker{font-size:11px;color:#c18cff;font-weight:850;text-transform:uppercase;letter-spacing:.6px}.btn{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2);color:var(--text);font-weight:800}.primary{background:var(--accent);border-color:var(--accent);color:white}.full{width:100%;margin-top:10px}.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{padding:13px}.stat strong{display:block;font-size:21px;margin-top:3px}.section{font-size:18px;font-weight:900;margin:19px 2px 9px}.card{padding:15px;margin-bottom:10px}.deadline{display:flex;align-items:center;justify-content:space-between}.status-open{color:#43e58c!important}.status-closed{color:#ff6675!important}.pill{padding:6px 8px;border-radius:9px;font-size:10px;font-weight:900;background:#1b3a2b;color:var(--green)}.match{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center}.team{font-weight:850}.vs{color:var(--muted);font-size:12px}.options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.options .btn.selected{border-color:var(--accent);background:#28133c;box-shadow:0 0 0 1px var(--accent) inset}.seasonRow{display:flex;align-items:center;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.seasonRow:last-child{border:0}.seasonRow .title{flex:1;font-weight:750}.select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px}.rankRow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.rankRow:last-child{border:0}.rank{width:30px;font-weight:900}.avatar{width:30px;height:30px;border-radius:50%;background:#2d2540;display:grid;place-items:center;margin-right:9px}.name{flex:1;font-weight:750}.points{font-weight:900}.code{font-size:23px;letter-spacing:2px;font-weight:950;text-align:center;padding:8px}.notice{padding:11px;border-radius:12px;background:#181323;border:1px solid var(--line);font-size:12px;color:#c8c0d4;line-height:1.45}.nav{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(440px,100%);background:#0e0b15f2;border-top:1px solid var(--line);backdrop-filter:blur(15px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 11px}.nav button{background:none;border:0;color:var(--muted);font-size:10px;font-weight:750;padding:6px 1px}.nav button.active{color:var(--accent)}.navIcon{display:block;font-size:18px;margin-bottom:2px}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#20162b;border:1px solid #523a69;padding:10px 14px;border-radius:12px;font-size:12px;display:none;z-index:20}
+
+.modal{position:fixed;inset:0;background:#090710ee;display:none;align-items:flex-end;justify-content:center;z-index:30}
+.sheet{width:min(440px,100%);background:#12101b;border:1px solid #30283f;border-radius:22px 22px 0 0;padding:20px}
+.field{width:100%;background:#181522;color:#f7f3ff;border:1px solid #30283f;border-radius:12px;padding:12px;margin-top:6px;font-size:16px}
+label{display:block;font-size:12px;color:#aaa2b8;margin-top:13px}
+
+.accountGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.teamChoice{border:1px solid #30283f;border-radius:14px;padding:11px;background:#181522;color:#f7f3ff;text-align:left;font-weight:800}
+.teamChoice.selected{outline:2px solid var(--accent);background:#28133c}
+.themeDot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--team)}
+
+.onboard{position:fixed;inset:0;background:#090710f5;display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.onboardBox{width:min(420px,100%);background:#12101b;border:1px solid #30283f;border-radius:22px;padding:20px}
+.progress{height:5px;background:#30283f;border-radius:5px;overflow:hidden;margin:12px 0 18px}
+.progress i{display:block;height:100%;background:var(--accent);width:50%}
+.locked{opacity:.65}
+.predSummary{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.predSummary:last-child{border-bottom:0}
+.check{color:var(--green);font-weight:900}
+
+:root[data-mode="light"]{
+ --bg:#f4f3f7;--panel:#ffffff;--panel2:#f0eef4;--line:#ddd8e5;--text:#17131d;--muted:#6e6677;
+}
+body{transition:background .2s,color .2s}
+.modeBtn{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:11px 8px;font-weight:800}
+.modeBtn.selected{outline:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--panel))}
+.settingsSection{margin-top:15px}
+
+:root[data-mode="light"] .top,
+:root[data-mode="light"] .nav,
+:root[data-mode="light"] .modal,
+:root[data-mode="light"] .onboard{background:#f4f3f7;color:var(--text)}
+:root[data-mode="light"] .hero{background:linear-gradient(135deg,#ffffff,#f2eef7)}
+:root[data-mode="light"] .sheet{background:#ffffff;border-color:var(--line)}
+:root[data-mode="light"] .field,
+:root[data-mode="light"] .select,
+:root[data-mode="light"] .teamChoice,
+:root[data-mode="light"] .modeBtn,
+:root[data-mode="light"] .btn:not(.primary){background:#f7f5f9;color:var(--text);border-color:var(--line)}
+:root[data-mode="light"] .notice{background:#f0edf4;border-color:var(--line);color:#554c5e}
+:root[data-mode="light"] .leaguebar,
+:root[data-mode="light"] .card{box-shadow:0 2px 10px rgba(35,25,45,.05)}
+:root[data-mode="light"] .nav{background:rgba(255,255,255,.94)}
+:root[data-mode="light"] .logo{color:var(--text)}
+:root[data-mode="light"] .muted{color:var(--muted)}
+
+.status-open{color:#43e58c!important}
+.status-closed{color:#ff6675!important}
+
+.player-search-wrap{margin-top:12px}
+.player-search{width:100%;box-sizing:border-box}
+.player-results{margin-top:6px;border:1px solid var(--line);border-radius:12px;background:var(--panel);max-height:230px;overflow:auto}
+.player-result{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;padding:11px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left}
+.player-result:last-child{border-bottom:0}
+.player-result:hover{background:var(--panel2)}
+.player-name{font-weight:700}
+.player-club{font-size:12px;color:var(--muted)}
+.player-selected{margin-top:7px;padding:10px 12px;border:1px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));display:flex;justify-content:space-between;align-items:center}
+
+.v9fix{margin:0 15px 12px;padding:9px 12px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.v9fix b{color:var(--text)}
+
+#myPlayerSeason .predSummary .muted:last-child{max-width:58%;text-align:right}
+
+#authGate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.authBox{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.authBrand{font-size:36px;line-height:.85;font-weight:950;margin-bottom:24px}
+.authBrand span{color:var(--accent)}
+.authTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}
+.authTab{padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--panel2);color:var(--text);font-weight:850}
+.authTab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.authError{color:#ff6675;font-size:12px;margin-top:8px;display:none}
+.authStep{display:none}.authStep.active{display:block}
+.authTeamGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:250px;overflow:auto;margin-top:8px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+window.FanRankConfig={
+ supabaseUrl:'https://tgfaerkeguosenkdgklq.supabase.co',
+ supabasePublishableKey:'sb_publishable_ioXtLwDGeom_u367zZwpig_LhQCXlso'
+};
+window.supabaseClient=window.supabase.createClient(
+ window.FanRankConfig.supabaseUrl,
+ window.FanRankConfig.supabasePublishableKey
+);
+</script>
+</head>
+<body>
+
+<div id="authGate">
+  <div class="authBox">
+    <div class="authBrand">FAN<br><span>RANK</span></div>
+    <div id="authWelcome" class="authStep active">
+      <div class="kicker">Welcome to FanRank</div>
+      <h1 style="margin:5px 0 8px">Play. Compete. Climb.</h1>
+      <div class="muted">Create an account or log in to access your leagues and predictions.</div>
+      <button class="btn primary full" id="showSignup">Create account</button>
+      <button class="btn full" id="showLogin">Log in</button>
+    </div>
+
+    <div id="authLogin" class="authStep">
+      <div class="kicker">Welcome back</div>
+      <h2 style="margin:5px 0">Log in</h2>
+      <label>Email</label><input id="loginEmail" class="field" type="email" placeholder="you@example.com">
+      <label>Password</label><input id="loginPassword" class="field" type="password" placeholder="••••••••">
+      <div id="loginError" class="authError"></div>
+      <button class="btn primary full" id="doLogin">Log in</button>
+      <button class="btn full" id="backWelcome">Back</button>
+      <button class="btn full" id="forgotPassword">Forgot password?</button>
+    </div>
+
+    <div id="authSignup" class="authStep">
+      <div class="kicker">Create account</div>
+      <h2 style="margin:5px 0">Join FanRank</h2>
+      <label>Name</label><input id="signupName" class="field" placeholder="e.g. Josh">
+      <label>Email</label><input id="signupEmail" class="field" type="email" placeholder="you@example.com">
+      <label>Password</label><input id="signupPassword" class="field" type="password" placeholder="At least 8 characters">
+      <label>Favourite team</label>
+      <div id="authTeams" class="authTeamGrid"></div>
+      <div id="signupError" class="authError"></div>
+      <button class="btn primary full" id="doSignup">Create account</button>
+      <button class="btn full" id="backSignup">Back</button>
+    </div>
+  </div>
+</div>
+<div class="app">
+<header class="top"><div class="logo">FAN<br><span>RANK</span></div><div class="bell">♧</div></header>
+
+<div class="v9fix"><b>FanRank</b> · V9 interface</div><div class="leaguebar" id="leagueBar"><div>🛡️ <b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">👥 8 members</div></div>
+
+<section id="home" class="screen active content">
+<div class="hero"><div class="heroGrid"><div><div class="kicker">Position</div><div class="big">2nd</div><div class="muted">214 points</div></div><div><div class="kicker">Virtual prize pot</div><div class="big">£400</div><div class="muted">1st place takes all</div></div></div></div>
+<div class="grid4"><div class="card stat"><span class="muted">Gameweek</span><strong>1 <span class="status-open">OPEN</span></strong></div><div class="card stat"><span class="muted">This GW</span><strong>27 pts</strong></div><div class="card stat"><span class="muted">Total points</span><strong>214</strong></div><div class="card stat"><span class="muted">Points behind</span><strong>6 pts</strong></div></div>
+<div class="section">Gameweek 1 deadline</div><div class="card deadline"><div><b>Friday 21 Aug · 20:00</b><div class="muted">Arsenal vs Coventry City</div></div><span class="pill status-open">OPEN</span></div>
+<div class="section">Next fixture to predict</div><div class="card"><div class="match"><div><div class="team">Arsenal</div></div><div class="vs">VS</div><div><div class="team">Coventry City</div></div></div><div class="options"><button class="btn" data-match="Arsenal">Arsenal</button><button class="btn" data-match="Draw">Draw</button><button class="btn" data-match="Coventry City">Coventry</button></div></div>
+<div class="section">League leaderboard</div><div class="card"><div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220 pts</span></div><div class="rankRow"><span class="rank">2</span><span class="avatar">Y</span><span class="name accent">You</span><span class="points accent">214 pts</span></div><div class="rankRow"><span class="rank">3</span><span class="avatar">D</span><span class="name">Dave</span><span class="points">207 pts</span></div><button class="btn full" data-go="leaderboard">View full leaderboard</button></div>
+</section>
+
+<section id="predict" class="screen content">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+  <div class="section" style="margin:0">🔮 Predict</div>
+  <button class="btn" data-go="mypredictions">My Predictions</button>
+</div>
+<div class="section" style="margin-top:8px">Gameweek 1</div><div class="notice">Pick the winner of every match. Correct prediction = <b>3 points</b>. Predictions lock before each match kicks off.</div>
+<div id="matches"></div>
+<button class="btn primary full" id="saveGW">Save gameweek predictions</button>
+<div class="section">🏆 Season predictions</div><div class="notice">Complete these before the season prediction deadline. Maximum available: <b>110 points</b>.</div>
+<div class="card" id="season"></div>
+
+<div class="card" id="fanrankPlayerPredictions">
+  <div class="kicker">Player predictions</div>
+  <div class="muted">Search for a player by name or club.</div>
+
+  <div class="player-search-wrap">
+    <label for="fanrankScorerSearch">Top Goalscorer · 15 pts</label>
+    <input id="fanrankScorerSearch" class="field player-search" type="search" placeholder="🔍 Search player…">
+    <div id="fanrankScorerResults" class="player-results"></div>
+    <div id="fanrankScorerSelected" class="player-selected" style="display:none"></div>
+  </div>
+
+  <div class="player-search-wrap">
+    <label for="fanrankAssistSearch">Most Assists · 15 pts</label>
+    <input id="fanrankAssistSearch" class="field player-search" type="search" placeholder="🔍 Search player…">
+    <div id="fanrankAssistResults" class="player-results"></div>
+    <div id="fanrankAssistSelected" class="player-selected" style="display:none"></div>
+  </div>
+
+  <div class="player-search-wrap">
+    <label for="fanrankPotySearch">Player of the Season · 15 pts</label>
+    <input id="fanrankPotySearch" class="field player-search" type="search" placeholder="🔍 Search player…">
+    <div id="fanrankPotyResults" class="player-results"></div>
+    <div id="fanrankPotySelected" class="player-selected" style="display:none"></div>
+  </div>
+</div>
+<button class="btn primary full" id="saveSeason">Save season predictions</button>
+</section>
+
+
+<section id="mypredictions" class="screen content">
+  <div class="section">📋 My Predictions</div>
+  <div class="notice">Your predictions stay private until the relevant deadline.</div>
+  <div class="section">Gameweek 1</div>
+  <div class="card" id="myGW"></div>
+  <div class="section">Season predictions</div>
+  <div class="card" id="mySeason"></div>
+  <div class="section">Player predictions</div>
+  <div class="card" id="myPlayerSeason">
+    <div class="predSummary"><span class="muted">○</span><span class="name">Top Goalscorer</span><span class="muted">Not picked</span></div>
+    <div class="predSummary"><span class="muted">○</span><span class="name">Most Assists</span><span class="muted">Not picked</span></div>
+    <div class="predSummary"><span class="muted">○</span><span class="name">Player of the Season</span><span class="muted">Not picked</span></div>
+  </div>
+</section>
+<section id="leaderboard" class="screen content">
+<div class="section">🏆 Leaderboard</div><div class="card">
+<div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220</span></div>
+<div class="rankRow"><span class="rank">2</span><span class="avatar">Y</span><span class="name accent">You</span><span class="points accent">214</span></div>
+<div class="rankRow"><span class="rank">3</span><span class="avatar">D</span><span class="name">Dave</span><span class="points">207</span></div>
+<div class="rankRow"><span class="rank">4</span><span class="avatar">T</span><span class="name">Tom</span><span class="points">198</span></div>
+<div class="rankRow"><span class="rank">5</span><span class="avatar">S</span><span class="name">Sam</span><span class="points">183</span></div>
+</div><div class="section">Prize pot</div><div class="hero"><div class="kicker">Current virtual pot</div><div class="big">£400</div><div class="muted">Winner takes all in this prototype league.</div></div></section>
+
+<section id="league" class="screen content">
+<div class="section">👥 Pallett League</div><div class="card"><div class="kicker">Invite code</div><div class="code">PALLETT-26</div><button class="btn full" id="copy">Copy invite code</button></div>
+<div class="section">Members</div><div class="card"><div class="rankRow"><span class="avatar">J</span><span class="name">Josh</span><span class="points">220 pts</span></div><div class="rankRow"><span class="avatar">Y</span><span class="name">You</span><span class="points">214 pts</span></div><div class="rankRow"><span class="avatar">D</span><span class="name">Dave</span><span class="points">207 pts</span></div><div class="rankRow"><span class="avatar">T</span><span class="name">Tom</span><span class="points">198 pts</span></div></div>
+</section>
+
+<section id="profile" class="screen content">
+<div class="card" id="accountSummary">
+  <div class="kicker">Your account</div>
+  <div class="big" id="accountName">You</div>
+  <div class="muted" id="accountTeam">Favourite team not selected</div>
+  <button class="btn full" id="changeTeam">Change favourite team</button>
+</div>
+
+<div class="section">👤 Profile</div><div class="card"><div class="big">You</div><div class="muted">214 total points</div></div>
+<div class="section">Scoring rules</div><div class="card"><div class="seasonRow"><span class="title">Correct gameweek result</span><b>3 pts</b></div><div class="seasonRow"><span class="title">Season winner</span><b>15 pts</b></div><div class="seasonRow"><span class="title">2nd place</span><b>10 pts</b></div><div class="seasonRow"><span class="title">3rd place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">4th place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Each relegated team</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Top goalscorer</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Top assists</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Player of the Season</span><b>15 pts</b></div></div>
+
+<div class="notice" id="dataStatus">✓ Your FanRank data is stored on this device in V10.</div>
+<div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div><button class="btn full" id="openSettings">⚙️ Settings</button><button class="btn full" id="accountAccess">Sign in / Account</button>
+</section>
+
+
+
+
+<div id="onboard" class="onboard">
+  <div class="onboardBox">
+    <div class="kicker">Welcome to FanRank</div>
+    <h2 style="margin:5px 0">Create your player profile</h2>
+    <div class="muted">Your favourite team controls your personal app colours.</div>
+    <div class="progress"><i></i></div>
+    <label for="onboardName">Your name</label>
+    <input id="onboardName" class="field" placeholder="e.g. Josh">
+    <label>Favourite team</label>
+    <div id="onboardTeams" class="accountGrid"></div>
+    <button class="btn primary full" id="finishOnboard">Continue to FanRank</button>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal">
+ <div class="sheet">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+   <div><div class="kicker">Settings</div><h2 style="margin:4px 0">Appearance</h2></div>
+   <button class="btn" id="closeSettings">Close</button>
+  </div>
+  <div class="muted" style="margin-top:5px">Choose how FanRank looks on your device.</div>
+  <div class="settingsSection">
+   <div class="accountGrid">
+    <button class="modeBtn" data-mode-choice="light">☀️ Light</button>
+    <button class="modeBtn" data-mode-choice="dark">🌙 Dark</button>
+   </div>
+   <button class="modeBtn full" data-mode-choice="system">📱 System default</button>
+  </div>
+  <div class="notice" style="margin-top:14px">Your favourite team's colour remains the app accent in both light and dark mode.</div>
+ </div>
+</div>
+
+<div id="authModal" class="modal">
+  <div class="sheet">
+    <div class="kicker">FanRank account</div>
+    <h2 style="margin:4px 0 8px">Sign in to FanRank</h2>
+    <div class="muted">V11 adds the account layer needed for shared leagues. Demo mode works now; live accounts connect when the backend is configured.</div>
+    <label for="authName">Name</label>
+    <input id="authName" class="field" placeholder="e.g. Josh">
+    <label for="authEmail">Email</label>
+    <input id="authEmail" class="field" type="email" placeholder="you@example.com">
+    <label for="authPassword">Password</label>
+    <input id="authPassword" class="field" type="password" placeholder="••••••••">
+    <button class="btn primary full" id="authSignIn">Sign in / Create demo account</button>
+    <button class="btn full" id="authClose">Not now</button>
+  </div>
+</div>
+<div id="accountModal" class="modal">
+  <div class="sheet">
+    <div class="kicker">Account</div>
+    <h2 style="margin:4px 0 8px">Create your profile</h2>
+    <div class="muted">Choose your favourite team. FanRank will use its colours for your personal theme.</div>
+    <label for="displayName">Your name</label>
+    <input id="displayName" class="field" placeholder="e.g. Josh">
+    <label>Favourite team</label>
+    <div id="teamChoices" class="accountGrid"></div>
+    <button class="btn primary full" id="saveAccount">Save profile</button>
+  </div>
+</div>
+<div id="leagueModal" class="modal">
+  <div class="sheet">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div class="kicker">League management</div><h2 style="margin:4px 0">Your leagues</h2></div>
+      <button class="btn" id="closeLeague">Close</button>
+    </div>
+    <div id="leagueList" class="card" style="margin-top:12px"></div>
+    <button class="btn primary full" id="createLeague">Create a new league</button>
+    <button class="btn full" id="joinLeague">Join with invite code</button>
+    <div id="leagueForm" style="display:none;margin-top:12px">
+      <label for="leagueName">League name</label>
+      <input id="leagueName" class="field" placeholder="e.g. Pallett League">
+      <label for="leagueEntry">Entry amount (virtual for now)</label>
+      <input id="leagueEntry" class="field" type="number" min="0" value="50">
+      <button class="btn primary full" id="saveLeague">Create league</button>
+    </div>
+    <div id="joinForm" style="display:none;margin-top:12px">
+      <label for="inviteCode">Invite code</label>
+      <input id="inviteCode" class="field" placeholder="e.g. PALLETT-26" autocapitalize="characters">
+      <button class="btn primary full" id="saveJoin">Join league</button>
+    </div>
+  </div>
+</div>
+<nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
+<div id="toast" class="toast"></div>
+</div>
+
+
+<script>
+/* FanRank V11 — authentication + multiplayer backend adapter
+   The app can run in DEMO mode immediately. To go live, add a Supabase
+   project URL and anon key in fanrank-config.js. */
+window.FanRankConfig = window.FanRankConfig || {
+  backend: 'demo',
+  supabaseUrl: '',
+  supabaseAnonKey: ''
+};
+
+const FanRankAuth = (() => {
+  const KEY='fanrank_v11_session';
+  const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}};
+  const set=s=>localStorage.setItem(KEY,JSON.stringify(s));
+  return {
+    session:get,
+    isSignedIn:()=>!!get(),
+    signOut:()=>{localStorage.removeItem(KEY); location.reload()},
+    demoSignIn:(name,email)=>{
+      const session={user:{id:crypto.randomUUID(),name:name||'You',email:email||''},mode:'demo'};
+      set(session); return session;
+    }
+  };
+})();
+
+const FanRankAPI = {
+  mode:()=>FanRankConfig.backend,
+  async signUp(name,email,password){
+    if(FanRankConfig.backend==='demo') return FanRankAuth.demoSignIn(name,email);
+    throw new Error('Backend configuration required');
+  },
+  async signIn(email,password){
+    if(FanRankConfig.backend==='demo') return FanRankAuth.demoSignIn('You',email);
+    throw new Error('Backend configuration required');
+  },
+  async signOut(){ FanRankAuth.signOut(); },
+  async leagues(){
+    return FanRankDB.getLeagues();
+  },
+  async createLeague(name,entry){
+    const leagues=FanRankDB.getLeagues();
+    const league={id:crypto.randomUUID(),name,code:(name.replace(/[^a-z0-9]/gi,'').slice(0,6)||'LEAGUE').toUpperCase()+'-'+Math.floor(100+Math.random()*900),members:1,entry:Number(entry)||0,owner:true};
+    leagues.push(league); FanRankDB.saveLeagues(leagues); return league;
+  },
+  async joinLeague(code){
+    const leagues=FanRankDB.getLeagues();
+    const league=leagues.find(x=>x.code===String(code).trim().toUpperCase());
+    if(!league) throw new Error('Invite code not found');
+    league.members=(league.members||0)+1; FanRankDB.saveLeagues(leagues); return league;
+  },
+  async savePredictions(predictions){
+    return FanRankDB.savePredictions(predictions);
+  },
+  async getPredictions(){ return FanRankDB.getPredictions(); }
+};
+window.FanRankAuth=FanRankAuth;
+window.FanRankAPI=FanRankAPI;
+</script>
+
+<script>
+
+
+const state={gw:{},season:{},playerPreds:JSON.parse(localStorage.getItem('fanrank_player_picks')||'{}')};
+const teamPalette=[["Arsenal", "#db0007"], ["Aston Villa", "#670e36"], ["AFC Bournemouth", "#da291c"], ["Brentford", "#e30613"], ["Brighton", "#0057b8"], ["Chelsea", "#034694"], ["Crystal Palace", "#1b458f"], ["Everton", "#003399"], ["Fulham", "#000000"], ["Leeds United", "#ffcd00"], ["Liverpool", "#c8102e"], ["Manchester City", "#6cabdd"], ["Manchester United", "#da2919"], ["Newcastle United", "#241f20"], ["Nottingham Forest", "#e53233"], ["Sunderland", "#eb172b"], ["Tottenham Hotspur", "#132257"], ["West Ham United", "#7a263a"], ["Wolverhampton Wanderers", "#fdb913"], ["Burnley", "#6c1d45"]];
+const accountState=JSON.parse(localStorage.getItem('pp_account')||'null')||{name:'You',team:'Arsenal',colour:'#db0007'};
+function applyTeamTheme(){
+ document.documentElement.style.setProperty('--accent',accountState.colour);
+ const dark=accountState.colour;
+ document.documentElement.style.setProperty('--team',dark);
+ document.getElementById('accountName').textContent=accountState.name;
+ document.getElementById('accountTeam').innerHTML='<span class="themeDot" style="--team:'+accountState.colour+'"></span>'+accountState.team;
+}
+function openAccount(){
+ const wrap=document.getElementById('teamChoices'); wrap.innerHTML='';
+ teamPalette.forEach(([name,colour])=>{
+   const b=document.createElement('button'); b.type='button'; b.className='teamChoice';
+   b.innerHTML='<span class="themeDot" style="--team:'+colour+'"></span>'+name;
+   if(name===accountState.team)b.classList.add('selected');
+   b.addEventListener('click',()=>{
+     wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));
+     b.classList.add('selected'); accountState.team=name; accountState.colour=colour;
+   });
+   wrap.appendChild(b);
+ });
+ document.getElementById('displayName').value=accountState.name==='You'?'':accountState.name;
+ document.getElementById('accountModal').style.display='flex';
+}
+document.getElementById('saveAccount').addEventListener('click',()=>{
+ const name=document.getElementById('displayName').value.trim()||'You';
+ accountState.name=name; localStorage.setItem('pp_account',JSON.stringify(accountState));
+ applyTeamTheme(); document.getElementById('accountModal').style.display='none'; toast('Profile saved · '+accountState.team);
+});
+document.getElementById('changeTeam').addEventListener('click',openAccount);
+applyTeamTheme();
+
+
+const ppV5Teams = teamPalette || [];
+const onboard = document.getElementById('onboard');
+function buildOnboard(){
+  const wrap=document.getElementById('onboardTeams');
+  wrap.innerHTML='';
+  ppV5Teams.forEach(([name,colour])=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='teamChoice';
+    b.innerHTML='<span class="themeDot" style="--team:'+colour+'"></span>'+name;
+    if(name===accountState.team)b.classList.add('selected');
+    b.addEventListener('click',()=>{
+      wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      accountState.team=name; accountState.colour=colour;
+    });
+    wrap.appendChild(b);
+  });
+}
+function renderPredictionSummary(){
+  const gw=document.getElementById('myGW');
+  const ss=document.getElementById('mySeason');
+  if(!gw||!ss)return;
+  gw.innerHTML='';
+  matches.forEach((m,i)=>{
+    const v=state.gw[i];
+    const row=document.createElement('div'); row.className='predSummary';
+    row.innerHTML='<span class="'+(v?'check':'muted')+'">'+(v?'✓':'○')+'</span><span class="name">'+m[0]+' vs '+m[1]+'</span><span class="muted">'+(v?(v==='home'?m[0]:v==='away'?m[1]:'Draw'):'Not picked')+'</span>';
+    gw.appendChild(row);
+  });
+  ss.innerHTML='';
+  seasonQs.forEach((q,i)=>{
+    const v=state.season[i];
+    const row=document.createElement('div'); row.className='predSummary';
+    row.innerHTML='<span class="'+(v?'check':'muted')+'">'+(v?'✓':'○')+'</span><span class="name">'+q[0]+'</span><span class="muted">'+(v||'Not picked')+'</span>';
+    ss.appendChild(row);
+  });
+
+  const ps=document.getElementById('myPlayerSeason');
+  if(ps){
+    const picks=JSON.parse(localStorage.getItem('fanrank_player_picks')||'{}');
+    const playerRows=[
+      ['topScorer','Top Goalscorer'],
+      ['topAssists','Most Assists'],
+      ['playerOfSeason','Player of the Season']
+    ];
+    ps.innerHTML='';
+    playerRows.forEach(([key,label])=>{
+      const p=picks[key];
+      const row=document.createElement('div'); row.className='predSummary';
+      row.innerHTML='<span class="'+(p?'check':'muted')+'">'+(p?'✓':'○')+'</span><span class="name">'+label+'</span><span class="muted">'+(p?(p.name+' · '+p.club):'Not picked')+'</span>';
+      ps.appendChild(row);
+    });
+  }
+}
+document.getElementById('finishOnboard').addEventListener('click',()=>{
+  const name=document.getElementById('onboardName').value.trim()||'You';
+  accountState.name=name;
+  localStorage.setItem('pp_account',JSON.stringify(accountState));
+  applyTeamTheme();
+  onboard.style.display='none';
+  toast('Welcome, '+name);
+});
+buildOnboard();
+if(!localStorage.getItem('pp_onboarded')){
+  onboard.style.display='flex';
+  document.getElementById('onboardName').value=accountState.name==='You'?'':accountState.name;
+}
+document.getElementById('saveGW').addEventListener('click',()=>{
+  if(Object.keys(state.gw).length<10){toast('Pick all 10 matches first');return}
+  localStorage.setItem('pp_gw_saved','yes');
+  toast('Gameweek predictions locked in');
+  renderPredictionSummary();
+});
+document.getElementById('saveSeason').addEventListener('click',()=>{
+  if(Object.keys(state.season).length<10){toast('Complete all 10 season predictions');return}
+  localStorage.setItem('pp_season_saved','yes');
+  toast('Season predictions submitted');
+  renderPredictionSummary();
+});
+const oldFinish=document.getElementById('finishOnboard');
+oldFinish.addEventListener('click',()=>localStorage.setItem('pp_onboarded','yes'));
+document.querySelectorAll('[data-go="mypredictions"]').forEach(b=>b.addEventListener('click',renderPredictionSummary));
+
+
+
+function setGameweekStatus(open){
+ const el=document.querySelector('.status-open,.status-closed');
+ if(!el)return;
+ el.classList.toggle('status-open',open);
+ el.classList.toggle('status-closed',!open);
+ el.textContent=open?'OPEN':'CLOSED';
+}
+
+const savedMode=localStorage.getItem('pp_mode')||'dark';
+function applyMode(mode){
+ const actual=mode==='system'?(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):mode;
+ document.documentElement.setAttribute('data-mode',actual);
+ document.documentElement.dataset.modePreference=mode;
+ localStorage.setItem('pp_mode',mode);
+ document.querySelectorAll('[data-mode-choice]').forEach(b=>b.classList.toggle('selected',b.dataset.modeChoice===mode));
+}
+applyMode(savedMode);
+document.getElementById('openSettings').addEventListener('click',()=>{
+ document.getElementById('settingsModal').style.display='flex';
+ applyMode(localStorage.getItem('pp_mode')||'dark');
+});
+document.getElementById('closeSettings').addEventListener('click',()=>document.getElementById('settingsModal').style.display='none');
+document.querySelectorAll('[data-mode-choice]').forEach(b=>b.addEventListener('click',()=>applyMode(b.dataset.modeChoice)));
+if(window.matchMedia){
+ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{
+  if((localStorage.getItem('pp_mode')||'dark')==='system') applyMode('system');
+ });
+}
+
+
+const fanRankPlayerPool = [["Erling Haaland", "Manchester City"], ["Phil Foden", "Manchester City"], ["Rodri", "Manchester City"], ["Rayan Cherki", "Manchester City"], ["Savinho", "Manchester City"], ["Jeremy Doku", "Manchester City"], ["Omar Marmoush", "Manchester City"], ["Bernardo Silva", "Manchester City"], ["Nico González", "Manchester City"], ["Mohamed Salah", "Liverpool"], ["Alexander Isak", "Liverpool"], ["Hugo Ekitiké", "Liverpool"], ["Cody Gakpo", "Liverpool"], ["Florian Wirtz", "Liverpool"], ["Dominik Szoboszlai", "Liverpool"], ["Virgil van Dijk", "Liverpool"], ["Ibrahima Konaté", "Liverpool"], ["Andy Robertson", "Liverpool"], ["Jeremie Frimpong", "Liverpool"], ["Alisson Becker", "Liverpool"], ["Bukayo Saka", "Arsenal"], ["Kai Havertz", "Arsenal"], ["Martin Ødegaard", "Arsenal"], ["Declan Rice", "Arsenal"], ["Gabriel Martinelli", "Arsenal"], ["Gabriel Jesus", "Arsenal"], ["William Saliba", "Arsenal"], ["Ben White", "Arsenal"], ["Mikel Merino", "Arsenal"], ["Viktor Gyökeres", "Arsenal"], ["Gabriel Magalhães", "Arsenal"], ["Cole Palmer", "Chelsea"], ["João Pedro", "Chelsea"], ["Nicolas Jackson", "Chelsea"], ["Moisés Caicedo", "Chelsea"], ["Enzo Fernández", "Chelsea"], ["Pedro Neto", "Chelsea"], ["Christopher Nkunku", "Chelsea"], ["Reece James", "Chelsea"], ["Bruno Fernandes", "Manchester United"], ["Matheus Cunha", "Manchester United"], ["Rasmus Højlund", "Manchester United"], ["Benjamin Šeško", "Manchester United"], ["Amad Diallo", "Manchester United"], ["Mason Mount", "Manchester United"], ["Kobbie Mainoo", "Manchester United"], ["Lisandro Martínez", "Manchester United"], ["Bryan Mbeumo", "Manchester United"], ["Anthony Gordon", "Newcastle United"], ["Alexander Isak", "Newcastle United"], ["Bruno Guimarães", "Newcastle United"], ["Harvey Barnes", "Newcastle United"], ["Sandro Tonali", "Newcastle United"], ["Nick Woltemade", "Newcastle United"], ["Ollie Watkins", "Aston Villa"], ["Morgan Rogers", "Aston Villa"], ["John McGinn", "Aston Villa"], ["Youri Tielemans", "Aston Villa"], ["Emiliano Martínez", "Aston Villa"], ["Marcus Rashford", "Aston Villa"], ["Eberechi Eze", "Crystal Palace"], ["Jean-Philippe Mateta", "Crystal Palace"], ["Ismaïla Sarr", "Crystal Palace"], ["Adam Wharton", "Crystal Palace"], ["Jarrod Bowen", "West Ham United"], ["Mohammed Kudus", "West Ham United"], ["Lucas Paquetá", "West Ham United"], ["Niclas Füllkrug", "West Ham United"], ["Chris Wood", "Nottingham Forest"], ["Morgan Gibbs-White", "Nottingham Forest"], ["Anthony Elanga", "Nottingham Forest"], ["Callum Hudson-Odoi", "Nottingham Forest"], ["Elliot Anderson", "Nottingham Forest"], ["Igor Jesus", "Nottingham Forest"], ["Dominic Solanke", "Tottenham Hotspur"], ["James Maddison", "Tottenham Hotspur"], ["Brennan Johnson", "Tottenham Hotspur"], ["Dejan Kulusevski", "Tottenham Hotspur"], ["Lucas Bergvall", "Tottenham Hotspur"], ["Richarlison", "Tottenham Hotspur"], ["Kaoru Mitoma", "Brighton"], ["João Pedro", "Brighton"], ["Danny Welbeck", "Brighton"], ["Georginio Rutter", "Brighton"], ["Yankuba Minteh", "Brighton"], ["Yoane Wissa", "Brentford"], ["Igor Thiago", "Brentford"], ["Bryan Mbeumo", "Brentford"], ["Kevin Schade", "Brentford"], ["Mikkel Damsgaard", "Brentford"], ["Raúl Jiménez", "Fulham"], ["Alex Iwobi", "Fulham"], ["Harry Wilson", "Fulham"], ["Emile Smith Rowe", "Fulham"], ["Adama Traoré", "Fulham"], ["Leandro Trossard", "Arsenal"], ["Adam Armstrong", "Southampton"], ["Cameron Archer", "Southampton"], ["Tyler Dibling", "Southampton"], ["Paul Onuachu", "Southampton"], ["Liam Delap", "Chelsea"], ["Evan Ferguson", "Brighton"], ["Sunderland players", "Sunderland"], ["Leeds United players", "Leeds United"], ["Burnley players", "Burnley"], ["AFC Bournemouth players", "AFC Bournemouth"]];
+const fanRankPlayerPicks = JSON.parse(localStorage.getItem('fanrank_player_picks') || '{}');
+window.fanRankPlayerPicks=fanRankPlayerPicks;
+
+function fanRankRenderPlayerPicker(inputId, resultsId, selectedId, pickKey) {
+  const input=document.getElementById(inputId);
+  const results=document.getElementById(resultsId);
+  const selected=document.getElementById(selectedId);
+  if(!input || !results || !selected) return;
+
+  function render() {
+    const q=input.value.trim().toLowerCase();
+    const matches=fanRankPlayerPool.filter(([name,club]) =>
+      !q || name.toLowerCase().includes(q) || club.toLowerCase().includes(q)
+    ).slice(0,15);
+
+    results.innerHTML = matches.map(([name,club]) =>
+      '<button type="button" class="player-result" data-name="'+name.replace(/"/g,'&quot;')+'" data-club="'+club.replace(/"/g,'&quot;')+'">' +
+      '<span class="player-name">'+name+'</span><span class="player-club">'+club+'</span></button>'
+    ).join('') || '<div class="player-result"><span class="player-club">No player found</span></div>';
+
+    results.querySelectorAll('[data-name]').forEach(btn => btn.addEventListener('click', () => {
+      const name=btn.dataset.name, club=btn.dataset.club;
+      fanRankPlayerPicks[pickKey]={name,club};
+      localStorage.setItem('fanrank_player_picks',JSON.stringify(fanRankPlayerPicks));
+      if(typeof renderPredictionSummary==='function') renderPredictionSummary();
+      input.value=name;
+      selected.style.display='flex';
+      selected.innerHTML='<span><b>'+name+'</b><br><span class="player-club">'+club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
+      selected.querySelector('[data-clear]').addEventListener('click',()=>{input.value='';selected.style.display='none';render();input.focus();});
+      results.innerHTML='';
+    }));
+  }
+  input.addEventListener('input',render);
+  input.addEventListener('focus',render);
+
+  const existing=fanRankPlayerPicks[pickKey];
+  if(existing) {
+    input.value=existing.name;
+    selected.style.display='flex';
+    selected.innerHTML='<span><b>'+existing.name+'</b><br><span class="player-club">'+existing.club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
+    selected.querySelector('[data-clear]').addEventListener('click',()=>{input.value='';selected.style.display='none';render();input.focus();});
+  } else render();
+}
+
+fanRankRenderPlayerPicker('fanrankScorerSearch','fanrankScorerResults','fanrankScorerSelected','topScorer');
+fanRankRenderPlayerPicker('fanrankAssistSearch','fanrankAssistResults','fanrankAssistSelected','topAssists');
+fanRankRenderPlayerPicker('fanrankPotySearch','fanrankPotyResults','fanrankPotySelected','playerOfSeason');
+
+
+let activeLeague = null;
+const LEAGUE_KEY='fanrank_active_league';
+
+async function currentUser(){
+  const {data:{user},error}=await window.supabaseClient.auth.getUser();
+  if(error || !user) throw new Error('Please log in again.');
+  return user;
+}
+
+async function fetchMyLeagues(){
+  const user=await currentUser();
+  const {data,error}=await window.supabaseClient
+    .from('league_members')
+    .select('league_id,role,leagues(id,name,invite_code,entry_amount,created_at)')
+    .eq('user_id',user.id)
+    .order('joined_at',{ascending:true});
+  if(error) throw error;
+  return (data||[]).map(x=>({...x.leagues,role:x.role}));
+}
+
+async function fetchMembers(leagueId){
+  const {data,error}=await window.supabaseClient
+    .from('league_members')
+    .select('user_id,role,joined_at,profiles(display_name,favourite_team)')
+    .eq('league_id',leagueId)
+    .order('joined_at',{ascending:true});
+  if(error) throw error;
+  return data||[];
+}
+
+function setActiveLeague(league){
+  activeLeague=league;
+  if(league) localStorage.setItem(LEAGUE_KEY,league.id);
+  else localStorage.removeItem(LEAGUE_KEY);
+  document.getElementById('activeLeagueName').textContent=league?.name||'No league selected';
+  document.getElementById('memberCount').textContent=league?'👥 loading…':'👥 0 members';
+}
+
+async function chooseInitialLeague(){
+  const leagues=await fetchMyLeagues();
+  if(!leagues.length){setActiveLeague(null);return leagues;}
+  const saved=localStorage.getItem(LEAGUE_KEY);
+  const found=leagues.find(x=>x.id===saved)||leagues[0];
+  setActiveLeague(found);
+  const members=await fetchMembers(found.id);
+  document.getElementById('memberCount').textContent='👥 '+members.length+' members';
+  return leagues;
+}
+
+async function renderLeagues(){
+  const list=document.getElementById('leagueList');
+  list.innerHTML='<div class="muted">Loading leagues…</div>';
+  try{
+    const leagues=await fetchMyLeagues();
+    if(!leagues.length){
+      list.innerHTML='<div class="notice">You are not in any leagues yet. Create one or join with an invite code.</div>';
+      setActiveLeague(null);
+      return;
+    }
+    if(!activeLeague || !leagues.some(x=>x.id===activeLeague.id)) setActiveLeague(leagues[0]);
+    const membersByLeague={};
+    for(const l of leagues){
+      try{membersByLeague[l.id]=(await fetchMembers(l.id)).length}catch(e){membersByLeague[l.id]=0}
+    }
+    list.innerHTML='';
+    leagues.forEach(l=>{
+      const row=document.createElement('div');row.className='rankRow';
+      const active=activeLeague&&activeLeague.id===l.id;
+      row.innerHTML='<span class="avatar">'+l.name.charAt(0).toUpperCase()+'</span>'+
+        '<span class="name">'+l.name+'<div class="muted">'+membersByLeague[l.id]+' members · '+l.invite_code+'</div></span>'+
+        '<button class="btn '+(active?'primary':'')+'" data-league="'+l.id+'">'+(active?'Active':'Select')+'</button>';
+      list.appendChild(row);
+    });
+    list.querySelectorAll('[data-league]').forEach(b=>b.addEventListener('click',async()=>{
+      const l=leagues.find(x=>x.id===b.dataset.league);
+      setActiveLeague(l);
+      const members=await fetchMembers(l.id);
+      document.getElementById('memberCount').textContent='👥 '+members.length+' members';
+      await renderActiveLeaguePage();
+      await renderLeagues();
+      toast(l.name+' selected');
+    }));
+    await renderActiveLeaguePage();
+  }catch(e){
+    list.innerHTML='<div class="notice">'+(e.message||'Unable to load leagues.')+'</div>';
+  }
+}
+
+async function renderActiveLeaguePage(){
+  const sec=document.getElementById('league');
+  if(!sec)return;
+  if(!activeLeague){
+    sec.innerHTML='<div class="section">👥 Your League</div><div class="notice">You are not in a league yet. Use the league bar above to create or join one.</div>';
+    return;
+  }
+  try{
+    const members=await fetchMembers(activeLeague.id);
+    sec.innerHTML=
+      '<div class="section">👥 '+activeLeague.name+'</div>'+
+      '<div class="card"><div class="kicker">Invite code</div><div class="code">'+activeLeague.invite_code+'</div>'+
+      '<button class="btn full" id="copy">Copy invite code</button></div>'+
+      '<div class="section">Members</div><div class="card" id="realMembers"></div>';
+    const box=document.getElementById('realMembers');
+    members.forEach((m,i)=>{
+      const name=m.profiles?.display_name||'FanRank user';
+      const row=document.createElement('div');row.className='rankRow';
+      row.innerHTML='<span class="rank">'+(i+1)+'</span><span class="avatar">'+name.charAt(0).toUpperCase()+'</span>'+
+        '<span class="name">'+name+'<div class="muted">'+(m.profiles?.favourite_team||'')+(m.role==='owner'?' · Owner':'')+'</div></span>'+
+        '<span class="points">0 pts</span>';
+      box.appendChild(row);
+    });
+    if(!members.length)box.innerHTML='<div class="muted">No members yet.</div>';
+    document.getElementById('copy').addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(activeLeague.invite_code);toast('Invite code copied')}
+      catch(e){toast('Invite code: '+activeLeague.invite_code)}
+    });
+  }catch(e){
+    sec.innerHTML='<div class="notice">'+(e.message||'Unable to load league.')+'</div>';
+  }
+}
+
+document.getElementById('leagueBar').addEventListener('click',async()=>{
+  document.getElementById('leagueModal').style.display='flex';
+  document.getElementById('leagueForm').style.display='none';
+  document.getElementById('joinForm').style.display='none';
+  await renderLeagues();
+});
+document.getElementById('closeLeague').addEventListener('click',()=>document.getElementById('leagueModal').style.display='none');
+document.getElementById('createLeague').addEventListener('click',()=>{
+  document.getElementById('leagueForm').style.display='block';
+  document.getElementById('joinForm').style.display='none';
+});
+document.getElementById('joinLeague').addEventListener('click',()=>{
+  document.getElementById('joinForm').style.display='block';
+  document.getElementById('leagueForm').style.display='none';
+});
+
+async function makeInviteCode(name){
+  const base=(name.replace(/[^a-z0-9]/gi,'').slice(0,6)||'LEAGUE').toUpperCase();
+  for(let i=0;i<8;i++){
+    const code=base+'-'+Math.floor(100+Math.random()*900);
+    const {data}=await window.supabaseClient.from('leagues').select('id').eq('invite_code',code).maybeSingle();
+    if(!data)return code;
+  }
+  throw new Error('Could not generate a unique invite code.');
+}
+
+document.getElementById('saveLeague').addEventListener('click',async()=>{
+  const btn=document.getElementById('saveLeague');
+  const name=document.getElementById('leagueName').value.trim();
+  const entry=Number(document.getElementById('leagueEntry').value||0);
+  if(!name){toast('Enter a league name');return}
+  btn.disabled=true;
+  try{
+    const user=await currentUser();
+    const invite=await makeInviteCode(name);
+    const {data:league,error}=await window.supabaseClient.from('leagues')
+      .insert({name,invite_code:invite,entry_amount:entry,owner_id:user.id})
+      .select().single();
+    if(error)throw error;
+    const {error:memberError}=await window.supabaseClient.from('league_members')
+      .insert({league_id:league.id,user_id:user.id,role:'owner'});
+    if(memberError)throw memberError;
+    activeLeague=league;setActiveLeague(league);
+    document.getElementById('leagueName').value='';
+    document.getElementById('leagueForm').style.display='none';
+    document.getElementById('leagueModal').style.display='none';
+    await renderActiveLeaguePage();await renderLeagues();
+    toast('League created · '+invite);
+  }catch(e){toast(e.message||'Unable to create league')}
+  finally{btn.disabled=false}
+});
+
+document.getElementById('saveJoin').addEventListener('click',async()=>{
+  const btn=document.getElementById('saveJoin');
+  const code=document.getElementById('inviteCode').value.trim().toUpperCase();
+  if(!code){toast('Enter an invite code');return}
+  btn.disabled=true;
+  try{
+    const user=await currentUser();
+    const {data:league,error}=await window.supabaseClient.from('leagues')
+      .select('*').eq('invite_code',code).maybeSingle();
+    if(error)throw error;
+    if(!league)throw new Error('Invite code not found');
+    const {error:memberError}=await window.supabaseClient.from('league_members')
+      .insert({league_id:league.id,user_id:user.id,role:'member'});
+    if(memberError){
+      if(memberError.code==='23505')throw new Error('You are already in this league.');
+      throw memberError;
+    }
+    activeLeague=league;setActiveLeague(league);
+    document.getElementById('inviteCode').value='';
+    document.getElementById('joinForm').style.display='none';
+    document.getElementById('leagueModal').style.display='none';
+    await renderActiveLeaguePage();await renderLeagues();
+    toast('Joined '+league.name);
+  }catch(e){toast(e.message||'Unable to join league')}
+  finally{btn.disabled=false}
+});
+
+(async()=>{try{await chooseInitialLeague();await renderActiveLeaguePage()}catch(e){console.warn(e)}})();
+
+const matches=[
+["Arsenal","Coventry City"],["Hull City","Manchester United"],["Everton","Crystal Palace"],["Ipswich Town","Sunderland"],["Nottingham Forest","Leeds United"],["Brentford","Tottenham Hotspur"],["Brighton & Hove Albion","Aston Villa"],["Manchester City","AFC Bournemouth"],["Newcastle United","Liverpool"],["Fulham","Chelsea"]
+];
+const teams=["Arsenal","Aston Villa","AFC Bournemouth","Brentford","Brighton & Hove Albion","Chelsea","Coventry City","Crystal Palace","Everton","Fulham","Hull City","Ipswich Town","Leeds United","Liverpool","Manchester City","Manchester United","Newcastle United","Nottingham Forest","Sunderland","Tottenham Hotspur"];
+const seasonQs=[
+["Winner",15,teams],["2nd place",10,teams],["3rd place",8,teams],["4th place",8,teams],
+["Relegated team 1",8,teams],["Relegated team 2",8,teams],["Relegated team 3",8,teams]
+];
+/* state is declared earlier so startup handlers cannot throw */
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800)}
+function go(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));const n=document.querySelector('.nav button[data-go="'+id+'"]');if(n)n.classList.add("active");window.scrollTo(0,0)}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go,b)));
+
+const mbox=document.getElementById("matches");
+matches.forEach((m,i)=>{
+ const d=document.createElement("div");d.className="card";
+ d.innerHTML=`<div class="muted">Match ${i+1} · 3 pts</div><div class="match" style="margin-top:8px"><div class="team">${m[0]}</div><div class="vs">VS</div><div class="team">${m[1]}</div></div><div class="options"><button class="btn" data-m="${i}" data-v="home">${m[0]}</button><button class="btn" data-m="${i}" data-v="draw">Draw</button><button class="btn" data-m="${i}" data-v="away">${m[1]}</button></div>`;
+ mbox.appendChild(d);
+});
+mbox.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{const i=b.dataset.m;mbox.querySelectorAll('[data-m="'+i+'"]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.gw[i]=b.dataset.v}));
+
+const season=document.getElementById("season");
+seasonQs.forEach((q,i)=>{
+ const row=document.createElement("div");row.className="seasonRow";
+ const opts=q[2].map(x=>`<option>${x}</option>`).join("");
+ row.innerHTML=`<span class="title">${q[0]}<div class="muted">${q[1]} pts</div></span><select class="select" data-s="${i}"><option value="">Select</option>${opts}</select>`;
+ season.appendChild(row);
+});
+season.querySelectorAll("select").forEach(s=>s.addEventListener("change",()=>state.season[s.dataset.s]=s.value));
+document.getElementById("saveGW").addEventListener("click",()=>{if(Object.keys(state.gw).length<10){toast("Pick all 10 match predictions first");return}toast("Gameweek predictions saved")});
+document.getElementById("saveSeason").addEventListener("click",()=>{if(Object.keys(state.season).length<7 || Object.keys(fanRankPlayerPicks).length<3){toast("Complete all 7 team picks and 3 player picks");return}toast("Season predictions saved")});
+document.querySelectorAll('[data-match]').forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll('[data-match]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected");toast("Prediction saved: "+b.dataset.match)}));
+document.getElementById("copy").addEventListener("click",()=>toast("Invite code: PALLETT-26"));
+
+/* FanRank V10 data layer
+   This is the first step toward a real backend.
+   All app data now flows through one storage API so it can later be
+   replaced by Supabase/Firebase/API calls without rebuilding the UI.
+*/
+const FanRankDB = (() => {
+  const prefix = 'fanrank_v10_';
+  function read(key, fallback) {
+    try { const raw = localStorage.getItem(prefix + key); return raw ? JSON.parse(raw) : fallback; }
+    catch(e) { return fallback; }
+  }
+  function write(key, value) {
+    localStorage.setItem(prefix + key, JSON.stringify(value));
+    return value;
+  }
+  return {
+    getUser: () => read('user', {id: crypto.randomUUID(), name:'You', team:'Arsenal', colour:'#db0007'}),
+    saveUser: u => write('user', u),
+    getLeagues: () => read('leagues', [{id:'demo',name:'Pallett League',code:'PALLETT-26',members:8,entry:50}]),
+    saveLeagues: ls => write('leagues', ls),
+    getPredictions: () => read('predictions', {gameweek:{},season:{},players:{}}),
+    savePredictions: p => write('predictions', p),
+    clear: () => Object.keys(localStorage).filter(k=>k.startsWith(prefix)).forEach(k=>localStorage.removeItem(k))
+  };
+})();
+window.FanRankDB = FanRankDB;
+
+</script>
+
+<script>
+(function(){
+  const modal=document.getElementById('authModal');
+  const access=document.getElementById('accountAccess');
+  const close=document.getElementById('authClose');
+  const sign=document.getElementById('authSignIn');
+  if(!modal||!access) return;
+  function open(){ modal.style.display='flex'; }
+  access.addEventListener('click',open);
+  close.addEventListener('click',()=>modal.style.display='none');
+  sign.addEventListener('click',async()=>{
+    const name=document.getElementById('authName').value.trim()||'You';
+    const email=document.getElementById('authEmail').value.trim();
+    const password=document.getElementById('authPassword').value;
+    if(!email||!password){toast('Enter an email and password');return;}
+    try{
+      const s=await FanRankAPI.signUp(name,email,password);
+      accountState.name=s.user.name;
+      localStorage.setItem('pp_account',JSON.stringify(accountState));
+      applyTeamTheme();
+      modal.style.display='none';
+      toast('FanRank account ready');
+    }catch(e){toast(e.message||'Unable to sign in');}
+  });
+  const s=FanRankAuth.session();
+  if(s){
+    document.getElementById('accountAccess').textContent='Account · '+s.user.name;
+  }
+})();
+</script>
+
+<script>
+(function(){
+ const sb=window.supabaseClient;
+ const gate=document.getElementById('authGate');
+ const welcome=document.getElementById('authWelcome'), login=document.getElementById('authLogin'), signup=document.getElementById('authSignup');
+ let selectedTeam='Arsenal', selectedColour='#db0007';
+
+ function step(s){[welcome,login,signup].forEach(x=>x.classList.remove('active'));s.classList.add('active')}
+ function err(id,msg,good=false){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';e.style.color=good?'#43e58c':''}
+ function clear(id){document.getElementById(id).style.display='none'}
+ function teams(){
+  const w=document.getElementById('authTeams'); if(!w)return;
+  const list=typeof teamPalette!=='undefined'?teamPalette:[['Arsenal','#db0007'],['Liverpool','#c8102e'],['Chelsea','#034694'],['Manchester City','#6cabdd'],['Manchester United','#da2919'],['Tottenham Hotspur','#132257']];
+  w.innerHTML='';
+  list.forEach(([n,c])=>{
+   const b=document.createElement('button');b.type='button';b.className='teamChoice';
+   b.innerHTML='<span class="themeDot" style="--team:'+c+'"></span>'+n;
+   if(n===selectedTeam)b.classList.add('selected');
+   b.onclick=()=>{w.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedTeam=n;selectedColour=c};
+   w.appendChild(b);
+  });
+ }
+ async function loadProfile(session){
+  const u=session.user, m=u.user_metadata||{};
+  let name=m.display_name||u.email.split('@')[0]||'You', team=m.favourite_team||'Arsenal', colour=m.accent_colour||'#db0007';
+  try{
+   const r=await sb.from('profiles').select('display_name,favourite_team,accent_colour').eq('id',u.id).maybeSingle();
+   if(r.data){name=r.data.display_name;team=r.data.favourite_team;colour=r.data.accent_colour}
+  }catch(e){}
+  localStorage.setItem('pp_account',JSON.stringify({name,team,colour}));
+  localStorage.setItem('pp_onboarded','yes');
+  if(typeof accountState!=='undefined'){accountState.name=name;accountState.team=team;accountState.colour=colour;if(typeof applyTeamTheme==='function')applyTeamTheme()}
+  gate.style.display='none';
+ }
+ async function init(){
+  teams();
+  const {data}=await sb.auth.getSession();
+  if(data.session) await loadProfile(data.session); else gate.style.display='flex';
+ }
+ document.getElementById('showSignup').onclick=()=>{teams();step(signup)};
+ document.getElementById('showLogin').onclick=()=>{clear('loginError');step(login)};
+ document.getElementById('backWelcome').onclick=()=>{clear('loginError');step(welcome)};
+ document.getElementById('backSignup').onclick=()=>{clear('signupError');step(welcome)};
+ document.getElementById('doSignup').onclick=async()=>{
+  clear('signupError');
+  const name=document.getElementById('signupName').value.trim(), email=document.getElementById('signupEmail').value.trim().toLowerCase(), pw=document.getElementById('signupPassword').value;
+  if(!name)return err('signupError','Please enter your name.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return err('signupError','Enter a valid email address.');
+  if(pw.length<8)return err('signupError','Password must be at least 8 characters.');
+  const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{display_name:name,favourite_team:selectedTeam,accent_colour:selectedColour}}});
+  if(error)return err('signupError',error.message);
+  if(data.session) await loadProfile(data.session);
+  else err('signupError','Account created. Check your email to confirm, then log in.',true);
+ };
+ document.getElementById('doLogin').onclick=async()=>{
+  clear('loginError');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase(),pw=document.getElementById('loginPassword').value;
+  if(!email||!pw)return err('loginError','Enter your email and password.');
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error)return err('loginError',error.message);
+  await loadProfile(data.session);
+ };
+ document.getElementById('forgotPassword').onclick=async()=>{
+  clear('loginError');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  if(!email)return err('loginError','Enter your email first.');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)return err('loginError',error.message);
+  err('loginError','Password reset email sent.',true);
+ };
+ sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='SIGNED_IN'&&session) await loadProfile(session);
+  if(event==='SIGNED_OUT') gate.style.display='flex';
+ });
+ init();
+})();
+</script>
+
+<script>
+(function(){
+ const access=document.getElementById('accountAccess'); if(!access)return;
+ const logout=document.createElement('button');logout.className='btn full';logout.textContent='Sign out';
+ access.parentNode.insertBefore(logout,access.nextSibling);
+ logout.onclick=async()=>{const {error}=await window.supabaseClient.auth.signOut();if(error){toast(error.message);return}location.reload()};
+})();
+</script>
+
+<script>
+/* FANRANK V15 — isolated prediction backend */
+window.FanRankV15 = (function () {
+  const sb = window.supabaseClient;
+
+  async function user() {
+    if (!sb) throw new Error("Supabase is not connected.");
+    const { data, error } = await sb.auth.getUser();
+    if (error) throw error;
+    if (!data.user) throw new Error("Please log in again.");
+    return data.user;
+  }
+
+  async function saveMatch({fixtureId, leagueId, prediction}) {
+    const u = await user();
+    const {data, error} = await sb.from("match_predictions")
+      .upsert({
+        fixture_id: fixtureId,
+        user_id: u.id,
+        league_id: leagueId,
+        prediction: prediction,
+        updated_at: new Date().toISOString()
+      }, {onConflict: "fixture_id,user_id,league_id"})
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function saveSeason({leagueId, type, value}) {
+    const u = await user();
+    const {data, error} = await sb.from("season_predictions")
+      .upsert({
+        user_id: u.id,
+        league_id: leagueId,
+        prediction_type: type,
+        prediction_value: value,
+        updated_at: new Date().toISOString()
+      }, {onConflict: "user_id,league_id,prediction_type"})
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function mine(leagueId) {
+    const u = await user();
+    const [m,s] = await Promise.all([
+      sb.from("match_predictions").select("*")
+        .eq("user_id",u.id).eq("league_id",leagueId),
+      sb.from("season_predictions").select("*")
+        .eq("user_id",u.id).eq("league_id",leagueId)
+    ]);
+    if (m.error) throw m.error;
+    if (s.error) throw s.error;
+    return {matches:m.data || [], season:s.data || []};
+  }
+
+  return {saveMatch, saveSeason, mine};
+})();
+</script>
+
+</body></html>
