@@ -1,17 +1,9 @@
-# Premier Predictor v5
+# Premier Predictor v6
 
-Added:
-- First-run account onboarding
-- Name + favourite team setup
-- Favourite-team theme
-- My Predictions screen
-- Gameweek prediction summary
-- Season prediction summary
-- Local submission status
-- Existing league creation/joining retained
-
-Still local/demo:
-- Accounts are device-local
-- League joining is device-local
-- Real multiplayer requires a cloud backend
-- Live fixture/result data and server-side scoring still need to be added
+Interface refinement:
+- Home "Best rank" replaced with "Points behind"
+- Removed Home "View pot breakdown" button
+- Simplified Home text colours
+- Single five-item bottom navigation row restored
+- My Predictions moved inside the Predict section
+- Existing V5 account, favourite-team theme, league and prediction features retained
