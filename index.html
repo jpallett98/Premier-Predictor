@@ -383,6 +383,7 @@ window.FanRankAPI=FanRankAPI;
 <script>
 
 
+const state={gw:{},season:{},playerPreds:JSON.parse(localStorage.getItem('fanrank_player_picks')||'{}')};
 const teamPalette=[["Arsenal", "#db0007"], ["Aston Villa", "#670e36"], ["AFC Bournemouth", "#da291c"], ["Brentford", "#e30613"], ["Brighton", "#0057b8"], ["Chelsea", "#034694"], ["Crystal Palace", "#1b458f"], ["Everton", "#003399"], ["Fulham", "#000000"], ["Leeds United", "#ffcd00"], ["Liverpool", "#c8102e"], ["Manchester City", "#6cabdd"], ["Manchester United", "#da2919"], ["Newcastle United", "#241f20"], ["Nottingham Forest", "#e53233"], ["Sunderland", "#eb172b"], ["Tottenham Hotspur", "#132257"], ["West Ham United", "#7a263a"], ["Wolverhampton Wanderers", "#fdb913"], ["Burnley", "#6c1d45"]];
 const accountState=JSON.parse(localStorage.getItem('pp_account')||'null')||{name:'You',team:'Arsenal',colour:'#db0007'};
 function applyTeamTheme(){
@@ -791,7 +792,7 @@ const seasonQs=[
 ["Winner",15,teams],["2nd place",10,teams],["3rd place",8,teams],["4th place",8,teams],
 ["Relegated team 1",8,teams],["Relegated team 2",8,teams],["Relegated team 3",8,teams]
 ];
-const state={gw:{},season:{},playerPreds:JSON.parse(localStorage.getItem('fanrank_player_picks')||'{}')};
+/* state is declared earlier so startup handlers cannot throw */
 function toast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800)}
 function go(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));const n=document.querySelector('.nav button[data-go="'+id+'"]');if(n)n.classList.add("active");window.scrollTo(0,0)}
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go,b)));
