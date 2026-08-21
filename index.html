@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0714">
+<title>Premier Predictor</title>
+<style>
+:root{--bg:#090710;--panel:#12101b;--panel2:#181522;--line:#30283f;--text:#f7f3ff;--muted:#aaa2b8;--accent:#a855f7;--green:#43e58c;--gold:#f4c84a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{width:min(440px,100%);margin:auto;min-height:100vh;padding-bottom:92px}.top{padding:25px 18px 12px;display:flex;align-items:center;justify-content:space-between}.logo{font-weight:950;font-size:23px;line-height:.92}.logo span{color:var(--accent)}.bell{font-size:22px}.content{padding:8px 15px}.screen{display:none}.screen.active{display:block}
+.leaguebar,.card,.hero{background:var(--panel);border:1px solid var(--line);border-radius:19px}.leaguebar{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;margin:0 15px 12px}.hero{padding:18px;margin-bottom:12px;background:linear-gradient(135deg,#1b1029,#0f0c16)}.heroGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.big{font-size:42px;font-weight:950;line-height:1;margin:5px 0}.accent{color:var(--accent)}.green{color:var(--green)}.gold{color:var(--gold)}.muted{color:var(--muted);font-size:12px}.kicker{font-size:11px;color:#c18cff;font-weight:850;text-transform:uppercase;letter-spacing:.6px}.btn{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:var(--panel2);color:var(--text);font-weight:800}.primary{background:var(--accent);border-color:var(--accent);color:white}.full{width:100%;margin-top:10px}.grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{padding:13px}.stat strong{display:block;font-size:21px;margin-top:3px}.section{font-size:18px;font-weight:900;margin:19px 2px 9px}.card{padding:15px;margin-bottom:10px}.deadline{display:flex;align-items:center;justify-content:space-between}.pill{padding:6px 8px;border-radius:9px;font-size:10px;font-weight:900;background:#1b3a2b;color:var(--green)}.match{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center}.team{font-weight:850}.vs{color:var(--muted);font-size:12px}.options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.options .btn.selected{border-color:var(--accent);background:#28133c;box-shadow:0 0 0 1px var(--accent) inset}.seasonRow{display:flex;align-items:center;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.seasonRow:last-child{border:0}.seasonRow .title{flex:1;font-weight:750}.select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px}.rankRow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.rankRow:last-child{border:0}.rank{width:30px;font-weight:900}.avatar{width:30px;height:30px;border-radius:50%;background:#2d2540;display:grid;place-items:center;margin-right:9px}.name{flex:1;font-weight:750}.points{font-weight:900}.code{font-size:23px;letter-spacing:2px;font-weight:950;text-align:center;padding:8px}.notice{padding:11px;border-radius:12px;background:#181323;border:1px solid var(--line);font-size:12px;color:#c8c0d4;line-height:1.45}.nav{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(440px,100%);background:#0e0b15f2;border-top:1px solid var(--line);backdrop-filter:blur(15px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 11px}.nav button{background:none;border:0;color:var(--muted);font-size:10px;font-weight:750;padding:6px 1px}.nav button.active{color:var(--accent)}.navIcon{display:block;font-size:18px;margin-bottom:2px}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#20162b;border:1px solid #523a69;padding:10px 14px;border-radius:12px;font-size:12px;display:none;z-index:20}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">PREMIER<br><span>PREDICTOR</span></div><div class="bell">♧</div></header>
+
+<div class="leaguebar"><div>🛡️ <b>Pallett League</b> <span class="accent">⌄</span></div><div class="muted">👥 8 members</div></div>
+
+<section id="home" class="screen active content">
+<div class="hero"><div class="heroGrid"><div><div class="kicker">Your position</div><div class="big">214</div><div class="muted">🥈 2nd of 8</div><div class="muted">6 points behind Josh</div></div><div><div class="kicker">Virtual prize pot</div><div class="big green">£400</div><div class="muted">1st place takes all</div><button class="btn full" data-go="league">View pot breakdown</button></div></div></div>
+<div class="grid4"><div class="card stat"><span class="muted">Gameweek</span><strong>1 <span class="accent">OPEN</span></strong></div><div class="card stat"><span class="muted">This GW</span><strong class="green">27 pts</strong></div><div class="card stat"><span class="muted">Total points</span><strong class="gold">214</strong></div><div class="card stat"><span class="muted">Best rank</span><strong class="accent">2nd</strong></div></div>
+<div class="section">Gameweek 1 deadline</div><div class="card deadline"><div><b>Friday 21 Aug · 20:00</b><div class="muted">Arsenal vs Coventry City</div></div><span class="pill">OPEN</span></div>
+<div class="section">Next fixture to predict</div><div class="card"><div class="match"><div><div class="team">Arsenal</div></div><div class="vs">VS</div><div><div class="team">Coventry City</div></div></div><div class="options"><button class="btn" data-match="Arsenal">Arsenal</button><button class="btn" data-match="Draw">Draw</button><button class="btn" data-match="Coventry City">Coventry</button></div></div>
+<div class="section">League leaderboard</div><div class="card"><div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220 pts</span></div><div class="rankRow"><span class="rank">2</span><span class="avatar">Y</span><span class="name accent">You</span><span class="points accent">214 pts</span></div><div class="rankRow"><span class="rank">3</span><span class="avatar">D</span><span class="name">Dave</span><span class="points">207 pts</span></div><button class="btn full" data-go="leaderboard">View full leaderboard</button></div>
+</section>
+
+<section id="predict" class="screen content">
+<div class="section">🔮 Gameweek 1</div><div class="notice">Pick the winner of every match. Correct prediction = <b>3 points</b>. Predictions lock before each match kicks off.</div>
+<div id="matches"></div>
+<button class="btn primary full" id="saveGW">Save gameweek predictions</button>
+<div class="section">🏆 Season predictions</div><div class="notice">Complete these before the season prediction deadline. Maximum available: <b>110 points</b>.</div>
+<div class="card" id="season"></div>
+<button class="btn primary full" id="saveSeason">Save season predictions</button>
+</section>
+
+<section id="leaderboard" class="screen content">
+<div class="section">🏆 Leaderboard</div><div class="card">
+<div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220</span></div>
+<div class="rankRow"><span class="rank">2</span><span class="avatar">Y</span><span class="name accent">You</span><span class="points accent">214</span></div>
+<div class="rankRow"><span class="rank">3</span><span class="avatar">D</span><span class="name">Dave</span><span class="points">207</span></div>
+<div class="rankRow"><span class="rank">4</span><span class="avatar">T</span><span class="name">Tom</span><span class="points">198</span></div>
+<div class="rankRow"><span class="rank">5</span><span class="avatar">S</span><span class="name">Sam</span><span class="points">183</span></div>
+</div><div class="section">Prize pot</div><div class="hero"><div class="kicker">Current virtual pot</div><div class="big green">£400</div><div class="muted">Winner takes all in this prototype league.</div></div></section>
+
+<section id="league" class="screen content">
+<div class="section">👥 Pallett League</div><div class="card"><div class="kicker">Invite code</div><div class="code">PALLETT-26</div><button class="btn full" id="copy">Copy invite code</button></div>
+<div class="section">Members</div><div class="card"><div class="rankRow"><span class="avatar">J</span><span class="name">Josh</span><span class="points">220 pts</span></div><div class="rankRow"><span class="avatar">Y</span><span class="name">You</span><span class="points">214 pts</span></div><div class="rankRow"><span class="avatar">D</span><span class="name">Dave</span><span class="points">207 pts</span></div><div class="rankRow"><span class="avatar">T</span><span class="name">Tom</span><span class="points">198 pts</span></div></div>
+</section>
+
+<section id="profile" class="screen content">
+<div class="section">👤 Profile</div><div class="card"><div class="big">You</div><div class="muted">214 total points</div></div>
+<div class="section">Scoring rules</div><div class="card"><div class="seasonRow"><span class="title">Correct gameweek result</span><b>3 pts</b></div><div class="seasonRow"><span class="title">Season winner</span><b>15 pts</b></div><div class="seasonRow"><span class="title">2nd place</span><b>10 pts</b></div><div class="seasonRow"><span class="title">3rd place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">4th place</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Each relegated team</span><b>8 pts</b></div><div class="seasonRow"><span class="title">Top goalscorer</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Top assists</span><b>15 pts</b></div><div class="seasonRow"><span class="title">Player of the Season</span><b>15 pts</b></div></div>
+<div class="notice">Play-money version. Real-money entry and payouts are not enabled.</div>
+</section>
+
+<nav class="nav"><button class="active" data-go="home"><span class="navIcon">⌂</span>Home</button><button data-go="predict"><span class="navIcon">⚽</span>Predict</button><button data-go="leaderboard"><span class="navIcon">🏆</span>Leaderboard</button><button data-go="league"><span class="navIcon">👥</span>League</button><button data-go="profile"><span class="navIcon">●</span>Profile</button></nav>
+<div id="toast" class="toast"></div>
+</div>
+
+<script>
+const matches=[
+["Arsenal","Coventry City"],["Hull City","Manchester United"],["Everton","Crystal Palace"],["Ipswich Town","Sunderland"],["Nottingham Forest","Leeds United"],["Brentford","Tottenham Hotspur"],["Brighton & Hove Albion","Aston Villa"],["Manchester City","AFC Bournemouth"],["Newcastle United","Liverpool"],["Fulham","Chelsea"]
+];
+const teams=["Arsenal","Aston Villa","AFC Bournemouth","Brentford","Brighton & Hove Albion","Chelsea","Coventry City","Crystal Palace","Everton","Fulham","Hull City","Ipswich Town","Leeds United","Liverpool","Manchester City","Manchester United","Newcastle United","Nottingham Forest","Sunderland","Tottenham Hotspur"];
+const seasonQs=[
+["Winner",15,teams],["2nd place",10,teams],["3rd place",8,teams],["4th place",8,teams],
+["Relegated team 1",8,teams],["Relegated team 2",8,teams],["Relegated team 3",8,teams],
+["Top goalscorer",15,["Select player"]],["Top assists",15,["Select player"]],["Player of the Season",15,["Select player"]]
+];
+const state={gw:{},season:{}};
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800)}
+function go(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));const n=document.querySelector('.nav button[data-go="'+id+'"]');if(n)n.classList.add("active");window.scrollTo(0,0)}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go,b)));
+
+const mbox=document.getElementById("matches");
+matches.forEach((m,i)=>{
+ const d=document.createElement("div");d.className="card";
+ d.innerHTML=`<div class="muted">Match ${i+1} · 3 pts</div><div class="match" style="margin-top:8px"><div class="team">${m[0]}</div><div class="vs">VS</div><div class="team">${m[1]}</div></div><div class="options"><button class="btn" data-m="${i}" data-v="home">${m[0]}</button><button class="btn" data-m="${i}" data-v="draw">Draw</button><button class="btn" data-m="${i}" data-v="away">${m[1]}</button></div>`;
+ mbox.appendChild(d);
+});
+mbox.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{const i=b.dataset.m;mbox.querySelectorAll('[data-m="'+i+'"]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.gw[i]=b.dataset.v}));
+
+const season=document.getElementById("season");
+seasonQs.forEach((q,i)=>{
+ const row=document.createElement("div");row.className="seasonRow";
+ const opts=q[2].map(x=>`<option>${x}</option>`).join("");
+ row.innerHTML=`<span class="title">${q[0]}<div class="muted">${q[1]} pts</div></span><select class="select" data-s="${i}"><option value="">Select</option>${opts}</select>`;
+ season.appendChild(row);
+});
+season.querySelectorAll("select").forEach(s=>s.addEventListener("change",()=>state.season[s.dataset.s]=s.value));
+document.getElementById("saveGW").addEventListener("click",()=>{if(Object.keys(state.gw).length<10){toast("Pick all 10 match predictions first");return}toast("Gameweek predictions saved")});
+document.getElementById("saveSeason").addEventListener("click",()=>{if(Object.keys(state.season).length<10){toast("Complete all 10 season predictions");return}toast("Season predictions saved")});
+document.querySelectorAll('[data-match]').forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll('[data-match]').forEach(x=>x.classList.remove("selected"));b.classList.add("selected");toast("Prediction saved: "+b.dataset.match)}));
+document.getElementById("copy").addEventListener("click",()=>toast("Invite code: PALLETT-26"));
+</script>
+</body></html>
