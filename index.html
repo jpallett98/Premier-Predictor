@@ -56,12 +56,18 @@ body{transition:background .2s,color .2s}
 :root[data-mode="light"] .logo{color:var(--text)}
 :root[data-mode="light"] .muted{color:var(--muted)}
 
-.playerSearch{margin:8px 0 10px}
-.playerResults{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-.playerRow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
-.playerRow:last-child{border-bottom:0}
-.playerMeta{font-size:12px;color:var(--muted)}
-.selectedPlayer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid var(--accent)}
+.status-open{color:#43e58c!important}
+.status-closed{color:#ff6675!important}
+
+.player-search-wrap{margin-top:12px}
+.player-search{width:100%;box-sizing:border-box}
+.player-results{margin-top:6px;border:1px solid var(--line);border-radius:12px;background:var(--panel);max-height:230px;overflow:auto}
+.player-result{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;padding:11px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left}
+.player-result:last-child{border-bottom:0}
+.player-result:hover{background:var(--panel2)}
+.player-name{font-weight:700}
+.player-club{font-size:12px;color:var(--muted)}
+.player-selected{margin-top:7px;padding:10px 12px;border:1px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));display:flex;justify-content:space-between;align-items:center}
 </style>
 </head>
 <body>
@@ -334,37 +340,52 @@ if(window.matchMedia){
 }
 
 
-const fanRankPlayers=[["Erling Haaland", "Manchester City"], ["Mohamed Salah", "Liverpool"], ["Bukayo Saka", "Arsenal"], ["Alexander Isak", "Liverpool"], ["Cole Palmer", "Chelsea"], ["Son Heung-min", "Tottenham Hotspur"], ["Ollie Watkins", "Aston Villa"], ["Bruno Fernandes", "Manchester United"], ["Phil Foden", "Manchester City"], ["Declan Rice", "Arsenal"], ["Martin \u00d8degaard", "Arsenal"], ["William Saliba", "Arsenal"], ["Virgil van Dijk", "Liverpool"], ["Trent Alexander-Arnold", "Liverpool"], ["Luis D\u00edaz", "Liverpool"], ["Darwin N\u00fa\u00f1ez", "Liverpool"], ["Dominic Solanke", "Tottenham Hotspur"], ["Anthony Gordon", "Newcastle United"], ["Jarrod Bowen", "West Ham United"], ["Eberechi Eze", "Crystal Palace"], ["Matheus Cunha", "Manchester United"], ["Morgan Rogers", "Aston Villa"], ["Jo\u00e3o Pedro", "Brighton"], ["Kaoru Mitoma", "Brighton"], ["Chris Wood", "Nottingham Forest"], ["Nicolas Jackson", "Chelsea"], ["Rasmus H\u00f8jlund", "Manchester United"], ["Kai Havertz", "Arsenal"], ["Gabriel Martinelli", "Arsenal"], ["Gabriel Jesus", "Arsenal"]];
-const playerCategories=[
- ['Top goalscorer','topScorer'],
- ['Most assists','topAssists'],
- ['Player of the Season','playerOfSeason']
-];
-function buildPlayerPickers(){
- const host=document.getElementById('playerFields'); if(!host)return;
- host.innerHTML='';
- playerCategories.forEach(([label,key])=>{
-   const wrap=document.createElement('div'); wrap.style.marginTop='14px';
-   wrap.innerHTML='<label>'+label+'</label><input class="field playerSearch" data-key="'+key+'" placeholder="🔍 Search player..."><div class="playerResults" data-results="'+key+'"></div><div class="selectedPlayer" data-selected="'+key+'" style="display:none"></div>';
-   host.appendChild(wrap);
-   const input=wrap.querySelector('input');
-   const results=wrap.querySelector('[data-results]');
-   const selected=wrap.querySelector('[data-selected]');
-   function render(){
-     const q=input.value.trim().toLowerCase();
-     const list=fanRankPlayers.filter(p=>!q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q)).slice(0,12);
-     results.innerHTML=list.map(p=>'<div class="playerRow" data-player="'+p[0].replace(/"/g,'&quot;')+'"><span>'+p[0]+'</span><span class="playerMeta">'+p[1]+'</span></div>').join('') || '<div class="playerRow"><span class="playerMeta">No players found</span></div>';
-     results.querySelectorAll('[data-player]').forEach(row=>row.addEventListener('click',()=>{
-       input.value=row.dataset.player;
-       const p=fanRankPlayers.find(x=>x[0]===row.dataset.player);
-       selected.textContent=p[0]+' · '+p[1]; selected.style.display='flex';
-       results.innerHTML=''; state.playerPreds=state.playerPreds||{}; state.playerPreds[key]=p[0];
-     }));
-   }
-   input.addEventListener('input',render); render();
- });
+const fanRankPlayerPool = [["Erling Haaland", "Manchester City"], ["Phil Foden", "Manchester City"], ["Rodri", "Manchester City"], ["Rayan Cherki", "Manchester City"], ["Savinho", "Manchester City"], ["Jeremy Doku", "Manchester City"], ["Omar Marmoush", "Manchester City"], ["Bernardo Silva", "Manchester City"], ["Nico González", "Manchester City"], ["Mohamed Salah", "Liverpool"], ["Alexander Isak", "Liverpool"], ["Hugo Ekitiké", "Liverpool"], ["Cody Gakpo", "Liverpool"], ["Florian Wirtz", "Liverpool"], ["Dominik Szoboszlai", "Liverpool"], ["Virgil van Dijk", "Liverpool"], ["Ibrahima Konaté", "Liverpool"], ["Andy Robertson", "Liverpool"], ["Jeremie Frimpong", "Liverpool"], ["Alisson Becker", "Liverpool"], ["Bukayo Saka", "Arsenal"], ["Kai Havertz", "Arsenal"], ["Martin Ødegaard", "Arsenal"], ["Declan Rice", "Arsenal"], ["Gabriel Martinelli", "Arsenal"], ["Gabriel Jesus", "Arsenal"], ["William Saliba", "Arsenal"], ["Ben White", "Arsenal"], ["Mikel Merino", "Arsenal"], ["Viktor Gyökeres", "Arsenal"], ["Gabriel Magalhães", "Arsenal"], ["Cole Palmer", "Chelsea"], ["João Pedro", "Chelsea"], ["Nicolas Jackson", "Chelsea"], ["Moisés Caicedo", "Chelsea"], ["Enzo Fernández", "Chelsea"], ["Pedro Neto", "Chelsea"], ["Christopher Nkunku", "Chelsea"], ["Reece James", "Chelsea"], ["Bruno Fernandes", "Manchester United"], ["Matheus Cunha", "Manchester United"], ["Rasmus Højlund", "Manchester United"], ["Benjamin Šeško", "Manchester United"], ["Amad Diallo", "Manchester United"], ["Mason Mount", "Manchester United"], ["Kobbie Mainoo", "Manchester United"], ["Lisandro Martínez", "Manchester United"], ["Bryan Mbeumo", "Manchester United"], ["Anthony Gordon", "Newcastle United"], ["Alexander Isak", "Newcastle United"], ["Bruno Guimarães", "Newcastle United"], ["Harvey Barnes", "Newcastle United"], ["Sandro Tonali", "Newcastle United"], ["Nick Woltemade", "Newcastle United"], ["Ollie Watkins", "Aston Villa"], ["Morgan Rogers", "Aston Villa"], ["John McGinn", "Aston Villa"], ["Youri Tielemans", "Aston Villa"], ["Emiliano Martínez", "Aston Villa"], ["Marcus Rashford", "Aston Villa"], ["Eberechi Eze", "Crystal Palace"], ["Jean-Philippe Mateta", "Crystal Palace"], ["Ismaïla Sarr", "Crystal Palace"], ["Adam Wharton", "Crystal Palace"], ["Jarrod Bowen", "West Ham United"], ["Mohammed Kudus", "West Ham United"], ["Lucas Paquetá", "West Ham United"], ["Niclas Füllkrug", "West Ham United"], ["Chris Wood", "Nottingham Forest"], ["Morgan Gibbs-White", "Nottingham Forest"], ["Anthony Elanga", "Nottingham Forest"], ["Callum Hudson-Odoi", "Nottingham Forest"], ["Elliot Anderson", "Nottingham Forest"], ["Igor Jesus", "Nottingham Forest"], ["Dominic Solanke", "Tottenham Hotspur"], ["James Maddison", "Tottenham Hotspur"], ["Brennan Johnson", "Tottenham Hotspur"], ["Dejan Kulusevski", "Tottenham Hotspur"], ["Lucas Bergvall", "Tottenham Hotspur"], ["Richarlison", "Tottenham Hotspur"], ["Kaoru Mitoma", "Brighton"], ["João Pedro", "Brighton"], ["Danny Welbeck", "Brighton"], ["Georginio Rutter", "Brighton"], ["Yankuba Minteh", "Brighton"], ["Yoane Wissa", "Brentford"], ["Igor Thiago", "Brentford"], ["Bryan Mbeumo", "Brentford"], ["Kevin Schade", "Brentford"], ["Mikkel Damsgaard", "Brentford"], ["Raúl Jiménez", "Fulham"], ["Alex Iwobi", "Fulham"], ["Harry Wilson", "Fulham"], ["Emile Smith Rowe", "Fulham"], ["Adama Traoré", "Fulham"], ["Leandro Trossard", "Arsenal"], ["Adam Armstrong", "Southampton"], ["Cameron Archer", "Southampton"], ["Tyler Dibling", "Southampton"], ["Paul Onuachu", "Southampton"], ["Liam Delap", "Chelsea"], ["Evan Ferguson", "Brighton"], ["Sunderland players", "Sunderland"], ["Leeds United players", "Leeds United"], ["Burnley players", "Burnley"], ["AFC Bournemouth players", "AFC Bournemouth"]];
+const fanRankPlayerPicks = JSON.parse(localStorage.getItem('fanrank_player_picks') || '{}');
+
+function fanRankRenderPlayerPicker(inputId, resultsId, selectedId, pickKey) {
+  const input=document.getElementById(inputId);
+  const results=document.getElementById(resultsId);
+  const selected=document.getElementById(selectedId);
+  if(!input || !results || !selected) return;
+
+  function render() {
+    const q=input.value.trim().toLowerCase();
+    const matches=fanRankPlayerPool.filter(([name,club]) =>
+      !q || name.toLowerCase().includes(q) || club.toLowerCase().includes(q)
+    ).slice(0,15);
+
+    results.innerHTML = matches.map(([name,club]) =>
+      '<button type="button" class="player-result" data-name="'+name.replace(/"/g,'&quot;')+'" data-club="'+club.replace(/"/g,'&quot;')+'">' +
+      '<span class="player-name">'+name+'</span><span class="player-club">'+club+'</span></button>'
+    ).join('') || '<div class="player-result"><span class="player-club">No player found</span></div>';
+
+    results.querySelectorAll('[data-name]').forEach(btn => btn.addEventListener('click', () => {
+      const name=btn.dataset.name, club=btn.dataset.club;
+      fanRankPlayerPicks[pickKey]={name,club};
+      localStorage.setItem('fanrank_player_picks',JSON.stringify(fanRankPlayerPicks));
+      input.value=name;
+      selected.style.display='flex';
+      selected.innerHTML='<span><b>'+name+'</b><br><span class="player-club">'+club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
+      selected.querySelector('[data-clear]').addEventListener('click',()=>{input.value='';selected.style.display='none';render();input.focus();});
+      results.innerHTML='';
+    });
+  }
+  input.addEventListener('input',render);
+  input.addEventListener('focus',render);
+
+  const existing=fanRankPlayerPicks[pickKey];
+  if(existing) {
+    input.value=existing.name;
+    selected.style.display='flex';
+    selected.innerHTML='<span><b>'+existing.name+'</b><br><span class="player-club">'+existing.club+'</span></span><button type="button" class="btn" data-clear>Change</button>';
+    selected.querySelector('[data-clear]').addEventListener('click',()=>{input.value='';selected.style.display='none';render();input.focus();});
+  } else render();
 }
-buildPlayerPickers();
+
+fanRankRenderPlayerPicker('fanrankScorerSearch','fanrankScorerResults','fanrankScorerSelected','topScorer');
+fanRankRenderPlayerPicker('fanrankAssistSearch','fanrankAssistResults','fanrankAssistSelected','topAssists');
+fanRankRenderPlayerPicker('fanrankPotySearch','fanrankPotyResults','fanrankPotySelected','playerOfSeason');
 
 const leagueStore=JSON.parse(localStorage.getItem('pp_leagues')||'null')||[
  {name:'Pallett League',code:'PALLETT-26',members:8,entry:50,owner:true}
