@@ -85,6 +85,17 @@ body{transition:background .2s,color .2s}
 .authStep{display:none}.authStep.active{display:block}
 .authTeamGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:250px;overflow:auto;margin-top:8px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+window.FanRankConfig={
+ supabaseUrl:'https://tgfaerkeguosenkdgklq.supabase.co',
+ supabasePublishableKey:'sb_publishable_ioXtLwDGeom_u367zZwpig_LhQCXlso'
+};
+window.supabaseClient=window.supabase.createClient(
+ window.FanRankConfig.supabaseUrl,
+ window.FanRankConfig.supabasePublishableKey
+);
+</script>
 </head>
 <body>
 
@@ -713,81 +724,88 @@ window.FanRankDB = FanRankDB;
 
 <script>
 (function(){
+ const sb=window.supabaseClient;
  const gate=document.getElementById('authGate');
  const welcome=document.getElementById('authWelcome'), login=document.getElementById('authLogin'), signup=document.getElementById('authSignup');
- const accountKey='fanrank_v11_auth';
- const existing=(()=>{try{return JSON.parse(localStorage.getItem(accountKey)||'null')}catch(e){return null}})();
  let selectedTeam='Arsenal', selectedColour='#db0007';
 
  function step(s){[welcome,login,signup].forEach(x=>x.classList.remove('active'));s.classList.add('active')}
- function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block'}
- function clearErr(id){const e=document.getElementById(id);e.style.display='none'}
- function finish(user){
-   localStorage.setItem(accountKey,JSON.stringify(user));
-   localStorage.setItem('pp_onboarded','yes');
-   localStorage.setItem('pp_account',JSON.stringify({name:user.name,team:user.team,colour:user.colour}));
-   gate.style.display='none';
-   if(typeof accountState!=='undefined'){accountState.name=user.name;accountState.team=user.team;accountState.colour=user.colour; if(typeof applyTeamTheme==='function')applyTeamTheme();}
-   if(typeof toast==='function')toast('Welcome to FanRank, '+user.name);
+ function err(id,msg,good=false){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';e.style.color=good?'#43e58c':''}
+ function clear(id){document.getElementById(id).style.display='none'}
+ function teams(){
+  const w=document.getElementById('authTeams'); if(!w)return;
+  const list=typeof teamPalette!=='undefined'?teamPalette:[['Arsenal','#db0007'],['Liverpool','#c8102e'],['Chelsea','#034694'],['Manchester City','#6cabdd'],['Manchester United','#da2919'],['Tottenham Hotspur','#132257']];
+  w.innerHTML='';
+  list.forEach(([n,c])=>{
+   const b=document.createElement('button');b.type='button';b.className='teamChoice';
+   b.innerHTML='<span class="themeDot" style="--team:'+c+'"></span>'+n;
+   if(n===selectedTeam)b.classList.add('selected');
+   b.onclick=()=>{w.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedTeam=n;selectedColour=c};
+   w.appendChild(b);
+  });
  }
- function renderTeams(){
-   const wrap=document.getElementById('authTeams'); if(!wrap)return;
-   const teams=typeof teamPalette!=='undefined'?teamPalette:[['Arsenal','#db0007'],['Liverpool','#c8102e'],['Chelsea','#034694'],['Manchester City','#6cabdd'],['Manchester United','#da2919'],['Tottenham Hotspur','#132257']];
-   wrap.innerHTML='';
-   teams.forEach(([name,col])=>{
-     const b=document.createElement('button');b.type='button';b.className='teamChoice';
-     b.innerHTML='<span class="themeDot" style="--team:'+col+'"></span>'+name;
-     if(name===selectedTeam)b.classList.add('selected');
-     b.onclick=()=>{wrap.querySelectorAll('.teamChoice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selectedTeam=name;selectedColour=col};
-     wrap.appendChild(b);
-   });
+ async function loadProfile(session){
+  const u=session.user, m=u.user_metadata||{};
+  let name=m.display_name||u.email.split('@')[0]||'You', team=m.favourite_team||'Arsenal', colour=m.accent_colour||'#db0007';
+  try{
+   const r=await sb.from('profiles').select('display_name,favourite_team,accent_colour').eq('id',u.id).maybeSingle();
+   if(r.data){name=r.data.display_name;team=r.data.favourite_team;colour=r.data.accent_colour}
+  }catch(e){}
+  localStorage.setItem('pp_account',JSON.stringify({name,team,colour}));
+  localStorage.setItem('pp_onboarded','yes');
+  if(typeof accountState!=='undefined'){accountState.name=name;accountState.team=team;accountState.colour=colour;if(typeof applyTeamTheme==='function')applyTeamTheme()}
+  gate.style.display='none';
  }
- if(existing){gate.style.display='none';}
- else {renderTeams();}
-
- document.getElementById('showSignup').onclick=()=>{renderTeams();step(signup)};
- document.getElementById('showLogin').onclick=()=>step(login);
- document.getElementById('backWelcome').onclick=()=>{clearErr('loginError');step(welcome)};
- document.getElementById('backSignup').onclick=()=>{clearErr('signupError');step(welcome)};
-
- document.getElementById('doSignup').onclick=()=>{
-   clearErr('signupError');
-   const name=document.getElementById('signupName').value.trim();
-   const email=document.getElementById('signupEmail').value.trim().toLowerCase();
-   const password=document.getElementById('signupPassword').value;
-   if(!name)return showErr('signupError','Please enter your name.');
-   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return showErr('signupError','Enter a valid email address.');
-   if(password.length<8)return showErr('signupError','Password must be at least 8 characters.');
-   const user={id:crypto.randomUUID(),name,email,team:selectedTeam,colour:selectedColour};
-   // Demo auth only: password is never stored.
-   finish(user);
+ async function init(){
+  teams();
+  const {data}=await sb.auth.getSession();
+  if(data.session) await loadProfile(data.session); else gate.style.display='flex';
+ }
+ document.getElementById('showSignup').onclick=()=>{teams();step(signup)};
+ document.getElementById('showLogin').onclick=()=>{clear('loginError');step(login)};
+ document.getElementById('backWelcome').onclick=()=>{clear('loginError');step(welcome)};
+ document.getElementById('backSignup').onclick=()=>{clear('signupError');step(welcome)};
+ document.getElementById('doSignup').onclick=async()=>{
+  clear('signupError');
+  const name=document.getElementById('signupName').value.trim(), email=document.getElementById('signupEmail').value.trim().toLowerCase(), pw=document.getElementById('signupPassword').value;
+  if(!name)return err('signupError','Please enter your name.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return err('signupError','Enter a valid email address.');
+  if(pw.length<8)return err('signupError','Password must be at least 8 characters.');
+  const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{display_name:name,favourite_team:selectedTeam,accent_colour:selectedColour}}});
+  if(error)return err('signupError',error.message);
+  if(data.session) await loadProfile(data.session);
+  else err('signupError','Account created. Check your email to confirm, then log in.',true);
  };
-
- document.getElementById('doLogin').onclick=()=>{
-   clearErr('loginError');
-   const email=document.getElementById('loginEmail').value.trim().toLowerCase();
-   const password=document.getElementById('loginPassword').value;
-   const stored=JSON.parse(localStorage.getItem(accountKey)||'null');
-   if(!stored || stored.email!==email)return showErr('loginError','No local FanRank account matches that email.');
-   if(!password)return showErr('loginError','Enter your password.');
-   finish(stored);
+ document.getElementById('doLogin').onclick=async()=>{
+  clear('loginError');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase(),pw=document.getElementById('loginPassword').value;
+  if(!email||!pw)return err('loginError','Enter your email and password.');
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error)return err('loginError',error.message);
+  await loadProfile(data.session);
  };
- document.getElementById('forgotPassword').onclick=()=>alert('Password reset will be connected to the live backend in the next backend stage.');
+ document.getElementById('forgotPassword').onclick=async()=>{
+  clear('loginError');
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  if(!email)return err('loginError','Enter your email first.');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)return err('loginError',error.message);
+  err('loginError','Password reset email sent.',true);
+ };
+ sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='SIGNED_IN'&&session) await loadProfile(session);
+  if(event==='SIGNED_OUT') gate.style.display='flex';
+ });
+ init();
 })();
 </script>
 
 <script>
 (function(){
- const access=document.getElementById('accountAccess');
- if(!access)return;
- access.addEventListener('contextmenu',e=>e.preventDefault());
- const logout=document.createElement('button');
- logout.className='btn full'; logout.id='fanrankSignOut'; logout.textContent='Sign out';
+ const access=document.getElementById('accountAccess'); if(!access)return;
+ const logout=document.createElement('button');logout.className='btn full';logout.textContent='Sign out';
  access.parentNode.insertBefore(logout,access.nextSibling);
- logout.onclick=()=>{
-   localStorage.removeItem('fanrank_v11_auth');
-   location.reload();
- };
+ logout.onclick=async()=>{const {error}=await window.supabaseClient.auth.signOut();if(error){toast(error.message);return}location.reload()};
 })();
 </script>
 </body></html>

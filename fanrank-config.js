@@ -1,13 +1,1 @@
-// FanRank V11 backend configuration
-// DEMO mode requires no setup.
-// For real accounts and shared leagues, set:
-// window.FanRankConfig = {
-//   backend: 'supabase',
-//   supabaseUrl: 'https://YOUR-PROJECT.supabase.co',
-//   supabaseAnonKey: 'YOUR-ANON-KEY'
-// };
-window.FanRankConfig = {
-  backend: 'demo',
-  supabaseUrl: '',
-  supabaseAnonKey: ''
-};
+window.FanRankConfig={supabaseUrl:'https://tgfaerkeguosenkdgklq.supabase.co',supabasePublishableKey:'sb_publishable_ioXtLwDGeom_u367zZwpig_LhQCXlso'};
