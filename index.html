@@ -596,7 +596,7 @@ async function fetchMyLeagues(){
     .from('league_members')
     .select('league_id,role,leagues(id,name,invite_code,entry_amount,created_at)')
     .eq('user_id',user.id)
-    .order('created_at',{ascending:true});
+    .order('joined_at',{ascending:true});
   if(error) throw error;
   return (data||[]).map(x=>({...x.leagues,role:x.role}));
 }
