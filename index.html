@@ -89,7 +89,57 @@ body{transition:background .2s,color .2s}
 .navIcon{display:block;height:22px;margin-bottom:4px;color:currentColor}
 .navIcon .icon{width:21px;height:21px;vertical-align:0}
 .sectionIcon{margin-right:7px}
-.modeMark{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid currentColor;border-radius:50%;font-size:10px;font-weight:900;margin-right:6px;opacity:.75}</style>
+.modeMark{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid currentColor;border-radius:50%;font-size:10px;font-weight:900;margin-right:6px;opacity:.75}
+/* V19 home dashboard balance */
+.grid4{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px;
+}
+.grid4 .card.stat{
+  min-width:0;
+  min-height:106px;
+  margin:0;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.grid4 .stat .muted{
+  font-size:11px;
+  line-height:1.25;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.grid4 .stat strong{
+  font-size:25px;
+  line-height:1.05;
+  margin-top:10px;
+}
+.hero{
+  margin-bottom:0;
+}
+.heroGrid{
+  gap:24px;
+}
+.heroGrid > div{
+  min-width:0;
+}
+.deadline{
+  min-height:88px;
+  padding:16px;
+}
+.deadline b{
+  font-size:17px;
+  line-height:1.25;
+}
+@media (max-width:360px){
+  .grid4{gap:9px}
+  .grid4 .card.stat{padding:13px;min-height:96px}
+  .grid4 .stat strong{font-size:22px}
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 window.FanRankConfig={
@@ -213,12 +263,12 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-s
 <div class="app">
 <header class="top"><div class="logo">FAN<br><span>RANK</span></div><div class="bell"><svg class="icon" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div></header>
 
-<div class="v9fix"><b>FanRank</b> · V18 interface</div><div class="leaguebar" id="leagueBar"><div><b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">8 members</div></div>
+<div class="v9fix"><b>FanRank</b> · V19 interface</div><div class="leaguebar" id="leagueBar"><div><b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">8 members</div></div>
 
 <section id="home" class="screen active content">
 <div class="hero"><div class="heroGrid"><div><div class="kicker">Position</div><div class="big">2nd</div><div class="muted">214 points</div></div><div><div class="kicker">Virtual prize pot</div><div class="big">£400</div><div class="muted">1st place takes all</div></div></div></div>
 <div class="grid4"><div class="card stat"><span class="muted">Gameweek</span><strong>1 <span class="status-open">OPEN</span></strong></div><div class="card stat"><span class="muted">This GW</span><strong>27 pts</strong></div><div class="card stat"><span class="muted">Total points</span><strong>214</strong></div><div class="card stat"><span class="muted">Points behind</span><strong>6 pts</strong></div></div>
-<div class="section">Gameweek 1 deadline</div><div class="card deadline"><div><b>Friday 21 Aug · 20:00</b><div class="muted">Arsenal vs Coventry City</div></div><span class="pill status-open">OPEN</span></div>
+<div class="section" style="margin-top:24px">Gameweek 1 deadline</div><div class="card deadline"><div><b>Friday 21 Aug · 20:00</b><div class="muted">Arsenal vs Coventry City</div></div><span class="pill status-open">OPEN</span></div>
 <div class="section">Next fixture to predict</div><div class="card"><div class="match"><div><div class="team">Arsenal</div></div><div class="vs">VS</div><div><div class="team">Coventry City</div></div></div><div class="options"><button class="btn" data-match="Arsenal">Arsenal</button><button class="btn" data-match="Draw">Draw</button><button class="btn" data-match="Coventry City">Coventry</button></div></div>
 <div class="section">League leaderboard</div><div class="card"><div class="rankRow"><span class="rank gold">1</span><span class="avatar">J</span><span class="name">Josh</span><span class="points">220 pts</span></div><div class="rankRow"><span class="rank">2</span><span class="avatar">Y</span><span class="name accent">You</span><span class="points accent">214 pts</span></div><div class="rankRow"><span class="rank">3</span><span class="avatar">D</span><span class="name">Dave</span><span class="points">207 pts</span></div><button class="btn full" data-go="leaderboard">View full leaderboard</button></div>
 </section>
