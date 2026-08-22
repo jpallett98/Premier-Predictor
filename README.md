@@ -1,7 +1,3 @@
-# FanRank V15.3
-
-Bug-fix build. The V15 state object is initialized before startup handlers,
-so a JavaScript ReferenceError cannot prevent the navigation handlers from
-being registered.
-
-Based on the working FanRank interface. No new SQL is required.
+# FanRank V17
+Substantive visual/brand redesign based on the working V15.3 app.
+No new SQL required. Existing app logic and Supabase integration are retained.
