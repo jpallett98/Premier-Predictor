@@ -1,3 +1,3 @@
-# FanRank V17
-Substantive visual/brand redesign based on the working V15.3 app.
-No new SQL required. Existing app logic and Supabase integration are retained.
+# FanRank V18
+
+Visual cleanup: removed emoji-based UI icons, added restrained SVG line icons, removed the redundant Profile summary card, and updated the interface version label.
