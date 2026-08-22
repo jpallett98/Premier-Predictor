@@ -221,7 +221,51 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-s
 :root[data-mode="dark"] .leaguebar .accent{color:#0b0f13}
 :root[data-mode="dark"] .hero{background:transparent}
 :root[data-mode="dark"] .nav{background:var(--panel)}
-</style></head>
+</style>
+<style id="fanrank-v20-home-fix">
+/* V20 — fix home stat overlap on narrow screens */
+.grid4{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+  width:100%;
+  margin-top:14px;
+}
+.grid4 .card.stat{
+  width:auto !important;
+  min-width:0 !important;
+  min-height:112px !important;
+  margin:0 !important;
+  padding:16px !important;
+  overflow:hidden;
+}
+.grid4 .stat .muted{
+  display:block;
+  white-space:normal !important;
+  overflow-wrap:anywhere;
+  font-size:11px !important;
+  line-height:1.25 !important;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.grid4 .stat strong{
+  display:block;
+  white-space:normal !important;
+  overflow-wrap:anywhere;
+  font-size:25px !important;
+  line-height:1.08 !important;
+  margin-top:10px !important;
+}
+@media (max-width:380px){
+  .grid4{gap:10px !important}
+  .grid4 .card.stat{
+    min-height:104px !important;
+    padding:14px !important;
+  }
+  .grid4 .stat strong{font-size:23px !important}
+}
+</style>
+</head>
 <body>
 
 <div id="authGate">
@@ -263,7 +307,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-s
 <div class="app">
 <header class="top"><div class="logo">FAN<br><span>RANK</span></div><div class="bell"><svg class="icon" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div></header>
 
-<div class="v9fix"><b>FanRank</b> · V19 interface</div><div class="leaguebar" id="leagueBar"><div><b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">8 members</div></div>
+<div class="v9fix"><b>FanRank</b> · V20 interface</div><div class="leaguebar" id="leagueBar"><div><b id="activeLeagueName">Pallett League</b> <span class="accent">⌄</span></div><div class="muted" id="memberCount">8 members</div></div>
 
 <section id="home" class="screen active content">
 <div class="hero"><div class="heroGrid"><div><div class="kicker">Position</div><div class="big">2nd</div><div class="muted">214 points</div></div><div><div class="kicker">Virtual prize pot</div><div class="big">£400</div><div class="muted">1st place takes all</div></div></div></div>

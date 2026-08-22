@@ -1,3 +1,3 @@
-# FanRank V19
+# FanRank V20
 
-Balanced the Home dashboard: the four summary stats now use a clean 2x2 grid with equal sizing, improved spacing, and better text wrapping. Also updated the version label to V19.
+Fixed the Home dashboard Gameweek/stat overlap. The four summary stats are now enforced as a balanced 2x2 grid after all existing styles, with controlled wrapping and sizing for narrow iPhone screens.
